@@ -1,6 +1,5 @@
 backend:
-  name: github
-  repo: MAN-Distilling/mandistilling
+  name: git-gateway
   branch: main
 
 media_folder: images
