@@ -1,0 +1,29 @@
+backend:
+  name: github
+  repo: MAN-Distilling/mandistilling
+  branch: main
+
+media_folder: images
+public_folder: /images
+
+collections:
+  - name: entries
+    label: Entries
+    folder: _entries
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: date, format: MMMM YYYY }
+      - label: Type
+        name: type
+        widget: select
+        options: [projects, thoughts, art]
+      - label: Subtypes
+        name: subtypes
+        widget: select
+        multiple: true
+        options: [Moving, Making, Fixing, Seeing, Recording, Experimenting, Stories, Wool, Leather, Wood, Stone, Air, Paint, Nature, Humans, Society, Building, Breaking, Work, Play, Heart, Mind]
+      - { label: Excerpt, name: excerpt, widget: text }
+      - { label: Image, name: image, widget: image, required: false }
+      - { label: YouTube URL, name: youtube, widget: string, required: false }
