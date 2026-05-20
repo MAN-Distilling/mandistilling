@@ -31,3 +31,4 @@ collections:
         required: false
         field: { label: Image, name: image, widget: image }
       - { label: YouTube URL, name: youtube, widget: string, required: false }
+      - { label: "Order (Art wall position — 1 is first)", name: order, widget: number, required: false, value_type: float }
