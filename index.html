@@ -1727,28 +1727,24 @@ function parseMarkdown(text) {
   const yaml = match[1];
 
   function getField(key) {
-    // Handle regular single line: key: value
-    const reSingle = new RegExp(`^${key}:\\s*(.+)$`, 'm');
-    const mSingle = yaml.match(reSingle);
-    if (mSingle && !mSingle[1].startsWith('>') && !mSingle[1].startsWith('|')) {
-      return mSingle[1].trim();
-    }
-
-    // Handle block scalar: key: >- or key: | followed by indented lines
-    const reBlock = new RegExp(`^${key}:\\s*[>|]-?\\n([\\s\\S]*?)(?=\\n\\S|$)`, 'm');
+    // Handle block scalar: key: >- or key: |
+    const reBlock = new RegExp(`^${key}:\\s*[>|]-?\\n((?:[ \\t].*|\\s*\\n)*)`, 'm');
     const mBlock = yaml.match(reBlock);
     if (mBlock) {
       return mBlock[1]
         .split('\n')
-        .map(l => l.replace(/^\s{2}/, ''))
+        .map(l => l.replace(/^  /, ''))
         .join('\n')
         .trim();
     }
-    return '';
+    // Handle single line: key: value
+    const reSingle = new RegExp(`^${key}:\\s*(.+)$`, 'm');
+    const mSingle = yaml.match(reSingle);
+    return mSingle ? mSingle[1].trim() : '';
   }
 
   function getList(key) {
-    const reBlock = new RegExp(`^${key}:[\\s\\S]*?(?=\\n\\w|$)`, 'm');
+    const reBlock = new RegExp(`^${key}:[\\s\\S]*?(?=\\n\\S|$)`, 'm');
     const block = yaml.match(reBlock);
     if (!block) return [];
     const items = block[0].match(/^\s+-\s+(.+)$/mg);
