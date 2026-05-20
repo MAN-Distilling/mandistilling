@@ -1722,21 +1722,34 @@ const GITHUB_REPO = 'MAN-Distilling/mandistilling';
 const ENTRIES_PATH = '_entries';
 
 function parseMarkdown(text) {
-  // Parse YAML frontmatter
   const match = text.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return null;
   const yaml = match[1];
-  const body = text.slice(match[0].length).trim();
 
   function getField(key) {
-    const re = new RegExp(`^${key}:\\s*(.*)$`, 'm');
-    const m = yaml.match(re);
-    return m ? m[1].trim() : '';
+    // Handle regular single line: key: value
+    const reSingle = new RegExp(`^${key}:\\s*(.+)$`, 'm');
+    const mSingle = yaml.match(reSingle);
+    if (mSingle && !mSingle[1].startsWith('>') && !mSingle[1].startsWith('|')) {
+      return mSingle[1].trim();
+    }
+
+    // Handle block scalar: key: >- or key: | followed by indented lines
+    const reBlock = new RegExp(`^${key}:\\s*[>|]-?\\n([\\s\\S]*?)(?=\\n\\S|$)`, 'm');
+    const mBlock = yaml.match(reBlock);
+    if (mBlock) {
+      return mBlock[1]
+        .split('\n')
+        .map(l => l.replace(/^\s{2}/, ''))
+        .join('\n')
+        .trim();
+    }
+    return '';
   }
 
   function getList(key) {
-    const re = new RegExp(`^${key}:[\\s\\S]*?(?=\\n\\w|$)`, 'm');
-    const block = yaml.match(re);
+    const reBlock = new RegExp(`^${key}:[\\s\\S]*?(?=\\n\\w|$)`, 'm');
+    const block = yaml.match(reBlock);
     if (!block) return [];
     const items = block[0].match(/^\s+-\s+(.+)$/mg);
     return items ? items.map(i => i.replace(/^\s+-\s+/, '').trim()) : [];
@@ -1747,7 +1760,7 @@ function parseMarkdown(text) {
     date:     getField('date'),
     type:     getField('type'),
     subtypes: getList('subtypes'),
-    excerpt:  getField('excerpt') || body,
+    excerpt:  getField('excerpt'),
     image:    getField('image'),
     youtube:  getField('youtube'),
     images:   []
