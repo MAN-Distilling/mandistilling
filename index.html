@@ -788,6 +788,46 @@
     height: 100%;
   }
 
+  /* ── ART WALL ── */
+  .art-wall-wrap {
+    padding: 1.5rem 1.5rem 4rem;
+  }
+
+  .art-wall {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .art-wall-item {
+    cursor: pointer;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .art-wall-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  }
+
+  .art-wall-item img {
+    display: block;
+    max-height: 340px;
+    width: auto;
+    max-width: 100%;
+    border-radius: 6px;
+  }
+
+  @media (max-width: 680px) {
+    .art-wall { gap: 8px; }
+    .art-wall-item img { max-height: 200px; }
+    .art-wall-wrap { padding: 1rem 1rem 3rem; }
+  }
+
   /* ── PHOTO PAGE ── */
   .photo-wrap {
     max-width: 1100px;
@@ -1163,8 +1203,8 @@
   <div class="filter-drawer" id="filter-drawer-art">
     <div class="filter-drawer-inner" id="filter-pills-art"></div>
   </div>
-  <div class="section-wrap">
-    <div class="section-stream" id="entries-art"></div>
+  <div class="art-wall-wrap">
+    <div class="art-wall" id="art-wall"></div>
   </div>
 </div>
 
@@ -1520,6 +1560,25 @@ function renderSection(type) {
     .filter(({e}) => e.type === type);
   if (activeFilter) filtered = filtered.filter(({e}) => (e.subtypes || []).includes(activeFilter));
 
+  // Art wall — natural proportions, ordered by order field
+  if (type === 'art') {
+    const wall = document.getElementById('art-wall');
+    if (!wall) return;
+    const sorted = filtered.sort((a, b) => (a.e.order || 999) - (b.e.order || 999));
+    const allArtImages = sorted.map(({e}) => e.image || (e.images && e.images[0]) || '').filter(Boolean);
+    wall.innerHTML = sorted.length
+      ? sorted.map(({e}, idx) => {
+          const src = e.image || (e.images && e.images[0]) || '';
+          if (!src) return '';
+          return `<div class="art-wall-item" onclick='openLightbox(${JSON.stringify(allArtImages)}, ${idx})'>
+            <img src="${src}" alt="${e.title}" loading="lazy">
+          </div>`;
+        }).join('')
+      : `<p class="filter-empty" style="padding:3rem 0;">${activeFilter ? `No art tagged "${activeFilter}" yet.` : 'Nothing here yet.'}</p>`;
+    return;
+  }
+
+  // Photo masonry
   if (type === 'photo') {
     const container = document.getElementById('photo-grid');
     if (!container) return;
@@ -1539,6 +1598,7 @@ function renderSection(type) {
     return;
   }
 
+  // Standard entry stream
   const container = document.getElementById(`entries-${type}`);
   if (!container) return;
   container.innerHTML = filtered.length
@@ -1857,8 +1917,16 @@ function parseMarkdown(text) {
     return items ? items.map(i => i.replace(/^\s+-\s+/, '').trim()) : [];
   }
 
-  const imageField = getField('image');
-  const imagesList = getList('images');
+  const SITE_URL = 'https://mandistilling.quest';
+
+  function fixImagePath(path) {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return SITE_URL + (path.startsWith('/') ? path : '/' + path);
+  }
+
+  const imageField = fixImagePath(getField('image'));
+  const imagesList = getList('images').map(fixImagePath);
   const allImages = imagesList.length > 0 ? imagesList : (imageField ? [imageField] : []);
 
   return {
@@ -1869,7 +1937,8 @@ function parseMarkdown(text) {
     excerpt:  getField('excerpt'),
     image:    imageField,
     youtube:  getField('youtube'),
-    images:   allImages
+    images:   allImages,
+    order:    parseFloat(getField('order')) || 999
   };
 }
 
