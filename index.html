@@ -3,9 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MAN.Distilling</title>
+<title>MAN...Distilling</title>
+<meta name="description" content="A personal creative hub. Art, travel, thought, distilled. Projects, writing, and visual work by MAN.Distilling.">
+<meta name="author" content="MAN.Distilling">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://mandistilling.quest">
+
+<!-- Open Graph — controls how links preview on social media -->
+<meta property="og:title" content="MAN...Distilling">
+<meta property="og:description" content="Art, travel, thought, distilled. A personal creative hub.">
+<meta property="og:url" content="https://mandistilling.quest">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MAN.Distilling">
+
+<!-- Twitter/X card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MAN...Distilling">
+<meta name="twitter:description" content="Art, travel, thought, distilled. A personal creative hub.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <style>
   :root {
     --ink: #1a2820;
@@ -614,13 +632,13 @@
   .peephole {
     display: inline-block;
     width: 62px;
-    height: 1em;
+    height: 1.8em;
     vertical-align: middle;
     overflow: hidden;
     border-radius: 3px;
     cursor: pointer;
     position: relative;
-    margin: 0 3px;
+    margin: 0 4px;
     border: 0.5px solid #c8d8d0;
     transition: border-color 0.2s;
   }
@@ -629,12 +647,12 @@
 
   .peephole img {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: auto;
-    height: 300%;
-    max-width: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
     pointer-events: none;
   }
 
@@ -786,6 +804,101 @@
   .watermark svg {
     width: 100%;
     height: 100%;
+  }
+
+  /* ── WORDS / LEXICON ── */
+  .words-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem 5rem;
+  }
+
+  .word-entry {
+    border-bottom: 0.5px solid #c8d8d0;
+    padding: 2rem 0;
+  }
+
+  .word-entry:last-child { border-bottom: none; }
+
+  .word-headword {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 0.25rem;
+  }
+
+  .word-pronunciation {
+    font-size: 13px;
+    color: var(--ink-faint);
+    font-style: italic;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+
+  .word-type {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 0.75rem;
+  }
+
+  .word-definition {
+    font-size: 17px;
+    color: var(--ink-mid);
+    line-height: 1.85;
+    margin-bottom: 0.5rem;
+  }
+
+  .word-firstused {
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+
+  /* ── GOPHER HOLE PAGE ── */
+  .gopher-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem 5rem;
+  }
+
+  .gopher-entry {
+    border-bottom: 0.5px solid #c8d8d0;
+    padding: 2.5rem 0;
+  }
+
+  .gopher-entry:last-child { border-bottom: none; }
+
+  .gopher-date {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.75rem;
+  }
+
+  .gopher-title {
+    font-family: var(--serif);
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  .gopher-body {
+    font-size: 16px;
+    color: var(--ink-mid);
+    line-height: 2;
+    white-space: pre-wrap;
+  }
+
+  @media (max-width: 680px) {
+    .words-wrap { padding: 2rem 1.25rem 3rem; }
+    .word-headword { font-size: 26px; }
+    .gopher-wrap { padding: 2rem 1.25rem 3rem; }
   }
 
   /* ── ART WALL ── */
@@ -1073,6 +1186,7 @@
     <li><a href="#" onclick="showPage('art')" data-page="art">Art</a></li>
     <li><a href="#" onclick="showPage('photo')" data-page="photo">Photo</a></li>
     <li><a href="#" onclick="showPage('bio')" data-page="bio">Bio</a></li>
+    <li><a href="#" onclick="showPage('words')" data-page="words">Words</a></li>
     <li><a href="#" onclick="showPage('links')" data-page="links">Links</a></li>
   </ul>
 </nav>
@@ -1367,6 +1481,74 @@
 </div>
 
 <!-- ════════════════════════════════════════
+     WORDS / LEXICON
+════════════════════════════════════════ -->
+<div id="page-words" class="page">
+  <div class="watermark">
+    <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5">
+      <!-- Quill -->
+      <path d="M 160 20 Q 80 60 60 160" stroke-width="1"/>
+      <path d="M 160 20 Q 140 80 60 160"/>
+      <path d="M 160 20 Q 120 50 60 160"/>
+      <line x1="60" y1="160" x2="55" y2="175"/>
+      <line x1="55" y1="175" x2="90" y2="165"/>
+      <line x1="55" y1="175" x2="50" y2="185"/>
+    </svg>
+  </div>
+  <div class="words-wrap">
+    <div style="font-family:var(--serif); font-size:38px; font-weight:400; color:var(--ink); margin-bottom:0.5rem;">Words</div>
+    <div style="font-size:14px; color:var(--ink-light); margin-bottom:3rem; font-style:italic;">A working lexicon. Coined, defined, owned.</div>
+    <div id="words-container">
+      <div class="word-entry">
+        <div class="word-headword">Wonclarity</div>
+        <div class="word-pronunciation">won-CLAR-ity</div>
+        <div class="word-type">noun</div>
+        <div class="word-definition">The particular brightness that arrives after genuine confusion. Not relief — illumination. The moment the tangle resolves into a single thread you can follow.</div>
+        <div class="word-firstused">First used: add year here</div>
+      </div>
+      <div class="word-entry">
+        <div class="word-headword">Your word here</div>
+        <div class="word-pronunciation">pro-nun-see-AY-shun</div>
+        <div class="word-type">noun / verb / adjective</div>
+        <div class="word-definition">Your definition here. Write it the way you'd explain it to someone who has never encountered the concept before, because they haven't — you made it.</div>
+        <div class="word-firstused">First used: year</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     GOPHER HOLE
+════════════════════════════════════════ -->
+<div id="page-gopher" class="page">
+  <div class="watermark">
+    <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5">
+      <!-- Descending spiral -->
+      <path d="M 100 30 Q 150 30 150 80 Q 150 130 100 130 Q 60 130 60 90 Q 60 60 90 60 Q 115 60 115 85 Q 115 105 100 105"/>
+      <line x1="100" y1="105" x2="100" y2="175"/>
+      <line x1="85" y1="165" x2="100" y2="175"/>
+      <line x1="115" y1="165" x2="100" y2="175"/>
+    </svg>
+  </div>
+  <div class="gopher-wrap">
+    <div style="font-family:var(--serif); font-size:38px; font-weight:400; color:var(--ink); margin-bottom:0.5rem;">Down the Gopher Hole</div>
+    <div style="font-size:14px; color:var(--ink-light); margin-bottom:0.5rem; font-style:italic;">Plain text. Long form. No excerpts. For those who read.</div>
+    <div style="font-size:12px; color:var(--ink-faint); margin-bottom:3rem;">Eventually this will connect to a real Gopher server. For now — the writing lives here.</div>
+    <div id="gopher-container">
+      <div class="gopher-entry">
+        <div class="gopher-date">Month Year</div>
+        <div class="gopher-title">Your first Gopher Hole piece</div>
+        <div class="gopher-body">This is where the uncut writing lives. No word limit. No formatting pressure. No excerpt. The whole thing, right here, for whoever made it this far.
+
+Write the way you think — run-on sentences welcome, three thoughts held simultaneously encouraged, won confused clarity expected on arrival.
+
+This page is not for everyone. That is entirely the point.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
      FULL ENTRY PAGE
 ════════════════════════════════════════ -->
 <div id="page-entry" class="page">
@@ -1387,6 +1569,11 @@
 <footer>
   <div class="epitaph">MAN.Distilling &nbsp;·&nbsp; 1985 – Until <span onclick="showPage('bio'); showBioSection('future')" style="cursor:pointer; border-bottom: 1px dotted #4a6a58;">…</span></div>
   <div class="footer-disclaimer">A public address, a private voice. A personal space on a public road. Enter freely or leave the same way <a href="about:blank" style="color:#4a6a58; text-decoration:none;">→</a></div>
+  <div style="margin-top:0.75rem;">
+    <span onclick="showPage('gopher')" style="font-family:var(--serif); font-style:italic; font-size:12px; color:#3a5048; cursor:pointer; border-bottom: 1px dotted #3a5048;">Down the Gopher Hole</span>
+    &nbsp;·&nbsp;
+    <span onclick="showPage('words')" style="font-family:var(--serif); font-style:italic; font-size:12px; color:#3a5048; cursor:pointer; border-bottom: 1px dotted #3a5048;">Words</span>
+  </div>
 </footer>
 
 <script>
