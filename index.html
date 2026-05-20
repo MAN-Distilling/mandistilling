@@ -1954,13 +1954,28 @@ function showEntry(index) {
     heroHTML = `<img class="entry-page-hero" src="${e.images[0]}" alt="${e.title}">`;
   }
 
-  // Body with peepholes — split on newlines into paragraphs
-  const paragraphs = e.excerpt.split('\n').filter(p => p.trim().length > 0);
+  // Body with peepholes — handle both real newlines and CMS folded text
+  // CMS >- format preserves \n\n as paragraph breaks but collapses single \n
+  const rawText = e.excerpt || '';
+
+  // Split on double newlines first, then single newlines as fallback
+  let paragraphs = rawText.split(/\n\n+/).filter(p => p.trim().length > 0);
+  if (paragraphs.length <= 1) {
+    // Try single newlines
+    paragraphs = rawText.split(/\n/).filter(p => p.trim().length > 0);
+  }
+  if (paragraphs.length <= 1) {
+    // No newlines at all — try splitting on sentence boundaries for very long text
+    paragraphs = [rawText];
+  }
+
   const bodyHTML = paragraphs.map(para => {
+    const cleaned = para.trim();
+    if (!cleaned) return '';
     if (e.images && e.images.length > 0) {
-      return renderBodyWithPeepholes(para, e.images, index);
+      return renderBodyWithPeepholes(cleaned, e.images, index);
     }
-    return `<p>${para}</p>`;
+    return `<p>${cleaned}</p>`;
   }).join('');
 
   // Subtype tags
