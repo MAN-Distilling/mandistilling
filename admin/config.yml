@@ -17,12 +17,17 @@ collections:
       - label: Type
         name: type
         widget: select
-        options: [projects, thoughts, art]
+        options: [projects, thoughts, art, photo]
       - label: Subtypes
         name: subtypes
         widget: select
         multiple: true
-        options: [Moving, Making, Fixing, Seeing, Recording, Experimenting, Stories, Wool, Leather, Wood, Stone, Air, Paint, Nature, Humans, Society, Building, Breaking, Work, Play, Heart, Mind]
+        options: [Moving, Making, Fixing, Seeing, Recording, Experimenting, Stories, Wool, Leather, Wood, Stone, Air, Paint, Nature, Humans, Society, Building, Breaking, Work, Play, Heart, Mind, Landscape, People, Travel, Detail, Urban, Abstract]
       - { label: Excerpt, name: excerpt, widget: text }
-      - { label: Image, name: image, widget: image, required: false }
+      - { label: Main Image, name: image, widget: image, required: false }
+      - label: Additional Images (for peepholes)
+        name: images
+        widget: list
+        required: false
+        field: { label: Image, name: image, widget: image }
       - { label: YouTube URL, name: youtube, widget: string, required: false }
