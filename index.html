@@ -1715,19 +1715,87 @@ function showPage(name) {
   window.scrollTo(0, 0);
 }
 
-render();
-</script>
-  <script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-      if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.href = "/admin/";
-        });
-      }
-    });
-    window.netlifyIdentity.init();
+/* ════════════════════════════════════════
+   GITHUB API — fetch CMS entries
+════════════════════════════════════════ */
+const GITHUB_REPO = 'MAN-Distilling/mandistilling';
+const ENTRIES_PATH = '_entries';
+
+function parseMarkdown(text) {
+  // Parse YAML frontmatter
+  const match = text.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return null;
+  const yaml = match[1];
+  const body = text.slice(match[0].length).trim();
+
+  function getField(key) {
+    const re = new RegExp(`^${key}:\\s*(.*)$`, 'm');
+    const m = yaml.match(re);
+    return m ? m[1].trim() : '';
   }
+
+  function getList(key) {
+    const re = new RegExp(`^${key}:[\\s\\S]*?(?=\\n\\w|$)`, 'm');
+    const block = yaml.match(re);
+    if (!block) return [];
+    const items = block[0].match(/^\s+-\s+(.+)$/mg);
+    return items ? items.map(i => i.replace(/^\s+-\s+/, '').trim()) : [];
+  }
+
+  return {
+    title:    getField('title'),
+    date:     getField('date'),
+    type:     getField('type'),
+    subtypes: getList('subtypes'),
+    excerpt:  getField('excerpt') || body,
+    image:    getField('image'),
+    youtube:  getField('youtube'),
+    images:   []
+  };
+}
+
+async function fetchEntries() {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${ENTRIES_PATH}`);
+    if (!res.ok) throw new Error('API error');
+    const files = await res.json();
+
+    const mdFiles = files
+      .filter(f => f.name.endsWith('.md'))
+      .sort((a, b) => b.name.localeCompare(a.name));
+
+    const fetched = await Promise.all(mdFiles.map(async f => {
+      const r = await fetch(f.download_url);
+      const text = await r.text();
+      return parseMarkdown(text);
+    }));
+
+    return fetched.filter(Boolean);
+  } catch(e) {
+    console.warn('Could not fetch from GitHub, using local entries', e);
+    return null;
+  }
+}
+
+async function fetchAndRender() {
+  // Show loading state
+  document.getElementById('entries-container').innerHTML =
+    `<p style="color:var(--ink-faint); padding:2rem 0;">Loading entries...</p>`;
+
+  const fetched = await fetchEntries();
+
+  if (fetched && fetched.length > 0) {
+    // Merge fetched entries with local Claude post — fetched first (newest)
+    const localSpecial = entries.filter(e => e.images && e.images.length > 0);
+    entries.length = 0;
+    fetched.forEach(e => entries.push(e));
+    localSpecial.forEach(e => entries.push(e));
+  }
+
+  render();
+}
+
+fetchAndRender();
 </script>
 </body>
 </html>
