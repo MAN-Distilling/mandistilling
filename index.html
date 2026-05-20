@@ -788,6 +788,49 @@
     height: 100%;
   }
 
+  /* ── PHOTO PAGE ── */
+  .photo-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2.5rem 4rem;
+  }
+
+  .photo-grid {
+    columns: 3;
+    column-gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .photo-item {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .photo-item img {
+    width: 100%;
+    display: block;
+    border-radius: 6px;
+    transition: transform 0.3s ease;
+  }
+
+  .photo-item:hover img { transform: scale(1.02); }
+
+  .photo-item-caption {
+    font-size: 12px;
+    color: var(--ink-light);
+    padding: 0.4rem 0 0.75rem;
+    font-style: italic;
+  }
+
+  @media (max-width: 680px) {
+    .photo-grid { columns: 2; }
+    .photo-wrap { padding: 0 1.25rem 3rem; }
+  }
+
   /* ── FULL ENTRY PAGE ── */
   .entry-page-wrap {
     max-width: 720px;
@@ -982,12 +1025,13 @@
 <body>
 
 <nav>
-  <div class="logo" onclick="showPage('home')">MAN<span>.</span>Distilling</div>
+  <div class="logo" onclick="showPage('home')">MAN<span>...</span>Distilling</div>
   <button class="nav-toggle" id="nav-toggle" aria-label="Menu">∴</button>
   <ul class="nav-links" id="nav-links">
     <li><a href="#" onclick="showPage('projects')" data-page="projects">Projects</a></li>
     <li><a href="#" onclick="showPage('thoughts')" data-page="thoughts">Thoughts</a></li>
     <li><a href="#" onclick="showPage('art')" data-page="art">Art</a></li>
+    <li><a href="#" onclick="showPage('photo')" data-page="photo">Photo</a></li>
     <li><a href="#" onclick="showPage('bio')" data-page="bio">Bio</a></li>
     <li><a href="#" onclick="showPage('links')" data-page="links">Links</a></li>
   </ul>
@@ -1242,6 +1286,47 @@
 </div>
 
 <!-- ════════════════════════════════════════
+     PHOTO
+════════════════════════════════════════ -->
+<div id="page-photo" class="page">
+  <div class="watermark">
+    <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5">
+      <!-- Camera aperture -->
+      <circle cx="100" cy="100" r="70" opacity="0.3"/>
+      <circle cx="100" cy="100" r="45"/>
+      <circle cx="100" cy="100" r="20"/>
+      <line x1="100" y1="55" x2="100" y2="30" opacity="0.5"/>
+      <line x1="138" y1="69" x2="158" y2="49" opacity="0.5"/>
+      <line x1="145" y1="100" x2="170" y2="100" opacity="0.5"/>
+      <line x1="138" y1="131" x2="158" y2="151" opacity="0.5"/>
+      <line x1="100" y1="145" x2="100" y2="170" opacity="0.5"/>
+      <line x1="62" y1="131" x2="42" y2="151" opacity="0.5"/>
+      <line x1="55" y1="100" x2="30" y2="100" opacity="0.5"/>
+      <line x1="62" y1="69" x2="42" y2="49" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-bar-inner">
+      <div class="filter-page-title">Photo</div>
+      <button class="filter-btn" id="filter-btn-photo" onclick="toggleDrawer('photo')">
+        <span class="filter-icon"><span></span><span></span><span></span></span>
+        Filter
+      </button>
+    </div>
+  </div>
+  <div class="filter-drawer" id="filter-drawer-photo">
+    <div class="filter-drawer-inner" id="filter-pills-photo"></div>
+  </div>
+  <div class="photo-wrap">
+    <div class="photo-grid" id="photo-grid">
+      <div style="color:var(--ink-faint); font-size:15px; padding:3rem 0;">
+        Photos coming soon. Upload images through the CMS and tag them as type: photo.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
      FULL ENTRY PAGE
 ════════════════════════════════════════ -->
 <div id="page-entry" class="page">
@@ -1349,7 +1434,8 @@ const entries = [
 const subcategories = {
   art:      ['Wool','Leather','Wood','Stone','Air','Paint'],
   thoughts: ['Nature','Humans','Society','Building','Breaking','Work','Play','Heart','Mind'],
-  projects: ['Moving','Making','Fixing','Seeing','Recording','Experimenting','Stories']
+  projects: ['Moving','Making','Fixing','Seeing','Recording','Experimenting','Stories'],
+  photo:    ['Landscape','People','Travel','Detail','Urban','Nature','Abstract']
 };
 
 /* ════════════════════════════════════════
@@ -1376,7 +1462,7 @@ const links = [
 /* ════════════════════════════════════════
    STATE
 ════════════════════════════════════════ */
-const activeFilters = { art: null, thoughts: null, projects: null };
+const activeFilters = { art: null, thoughts: null, projects: null, photo: null };
 let activeBioSection = 'past';
 
 /* ════════════════════════════════════════
@@ -1434,7 +1520,27 @@ function renderSection(type) {
     .filter(({e}) => e.type === type);
   if (activeFilter) filtered = filtered.filter(({e}) => (e.subtypes || []).includes(activeFilter));
 
+  if (type === 'photo') {
+    const container = document.getElementById('photo-grid');
+    if (!container) return;
+    container.innerHTML = filtered.length
+      ? filtered.map(({e, i}) => {
+          const src = e.image || (e.images && e.images[0]) || '';
+          if (!src) return '';
+          const caption = e.title || '';
+          const subs = (e.subtypes || []).join(', ');
+          return `
+            <div class="photo-item" onclick="showEntry(${i})">
+              <img src="${src}" alt="${caption}" loading="lazy">
+              <div class="photo-item-caption">${caption}${subs ? ' · ' + subs : ''}</div>
+            </div>`;
+        }).join('')
+      : `<p class="filter-empty">${activeFilter ? `No photos tagged "${activeFilter}" yet.` : 'Photos coming soon.'}</p>`;
+    return;
+  }
+
   const container = document.getElementById(`entries-${type}`);
+  if (!container) return;
   container.innerHTML = filtered.length
     ? filtered.map(({e, i}) => entryHTML(e, i)).join('')
     : `<p class="filter-empty">${activeFilter ? `No ${type} tagged "${activeFilter}" yet.` : 'Nothing here yet.'}</p>`;
@@ -1473,7 +1579,7 @@ function render() {
     entries.slice(0, 5).map((e, i) => entryHTML(e, i)).join('');
 
   // Section pages
-  ['projects','thoughts','art'].forEach(type => {
+  ['projects','thoughts','art','photo'].forEach(type => {
     buildFilterPills(type);
     renderSection(type);
   });
@@ -1751,15 +1857,19 @@ function parseMarkdown(text) {
     return items ? items.map(i => i.replace(/^\s+-\s+/, '').trim()) : [];
   }
 
+  const imageField = getField('image');
+  const imagesList = getList('images');
+  const allImages = imagesList.length > 0 ? imagesList : (imageField ? [imageField] : []);
+
   return {
     title:    getField('title'),
     date:     getField('date'),
     type:     getField('type'),
     subtypes: getList('subtypes'),
     excerpt:  getField('excerpt'),
-    image:    getField('image'),
+    image:    imageField,
     youtube:  getField('youtube'),
-    images:   []
+    images:   allImages
   };
 }
 
