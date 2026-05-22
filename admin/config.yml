@@ -32,3 +32,33 @@ collections:
         field: { label: Image, name: image, widget: image }
       - { label: YouTube URL, name: youtube, widget: string, required: false }
       - { label: "Order (Art wall position — 1 is first)", name: order, widget: number, required: false, value_type: float }
+
+  - name: places
+    label: Places
+    folder: _places
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string, required: false }
+      - { label: Latitude, name: lat, widget: number, value_type: float }
+      - { label: Longitude, name: lng, widget: number, value_type: float }
+      - { label: Date, name: date, widget: string, required: false }
+      - { label: Note, name: note, widget: text, required: false }
+      - label: Pin Colour
+        name: color
+        widget: select
+        required: false
+        default: "#6aab8a"
+        options: ["#6aab8a","#d4a830","#c0573a","#5b8fa0","#8a7ab0","#a8bfb0","#e8ede9"]
+      - label: Pin Shape
+        name: shape
+        widget: select
+        required: false
+        default: circle
+        options: [circle, diamond, star, cross]
+      - { label: Related post title, name: postTitle, widget: string, required: false }
+      - label: Images
+        name: images
+        widget: list
+        required: false
+        field: { label: Image, name: image, widget: image }
