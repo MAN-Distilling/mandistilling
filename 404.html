@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — MAN...Distilling</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1a2820">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%231a2820' rx='4'/%3E%3Ccircle cx='11' cy='11' r='3' fill='%236aab8a'/%3E%3Ccircle cx='21' cy='11' r='3' fill='%236aab8a'/%3E%3Ccircle cx='16' cy='21' r='3' fill='%236aab8a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #e8ede9;
+    --ink-mid: #b8cfc4;
+    --ink-faint: #4a6a58;
+    --sage: #6aab8a;
+    --stone: #0f1a16;
+    --serif: 'Lora', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--stone);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .symbol {
+    font-family: var(--serif);
+    font-size: 72px;
+    color: var(--ink-faint);
+    line-height: 1;
+    margin-bottom: 2rem;
+  }
+
+  .code {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 2rem;
+  }
+
+  .heading {
+    font-family: var(--serif);
+    font-size: clamp(20px, 4vw, 26px);
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.45;
+    max-width: 480px;
+    margin-bottom: 1.75rem;
+  }
+
+  .body {
+    font-size: 15px;
+    color: var(--ink-mid);
+    line-height: 1.9;
+    max-width: 420px;
+    margin-bottom: 3rem;
+  }
+
+  .link {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--sage);
+    text-decoration: none;
+    border-bottom: 0.5px solid var(--sage);
+    padding-bottom: 2px;
+    transition: opacity 0.2s;
+  }
+
+  .link:hover { opacity: 0.7; }
+
+  .home {
+    margin-top: 1.5rem;
+    font-size: 12px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+  }
+
+  .home a {
+    color: var(--ink-faint);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--ink-faint);
+  }
+
+  .home a:hover { color: var(--sage); border-bottom-color: var(--sage); }
+
+  .epitaph {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--serif);
+    font-size: 11px;
+    font-style: italic;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    opacity: 0.4;
+  }
+
+  .watermark {
+    position: fixed;
+    bottom: 2.5rem;
+    right: 2rem;
+    width: 100px;
+    height: 100px;
+    opacity: 0.04;
+    color: var(--ink);
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+  <div class="symbol">∴</div>
+
+  <div class="code">Error 404</div>
+
+  <div class="heading">
+    The system reported nothing here.<br>
+    The system is frequently wrong about this.
+  </div>
+
+  <div class="body">
+    Some things are present without being findable.<br>
+    Some things are findable without being present.<br>
+    The map is not the territory. The URL is not the thought.<br>
+    <br>
+    <em>This is not the end of the search. This is the search, in a different form.</em>
+  </div>
+
+  <a class="link" href="https://mandistilling.quest/#/thoughts">→ Into the Thoughts</a>
+
+  <div class="home">
+    or return to <a href="https://mandistilling.quest/">mandistilling.quest</a>
+  </div>
+
+  <svg class="watermark" viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="1.5">
+    <circle cx="100" cy="60" r="35"/>
+    <path d="M 65 60 Q 40 110 60 145 Q 80 175 100 175 Q 120 175 140 145 Q 160 110 135 60"/>
+    <line x1="100" y1="25" x2="100" y2="10"/>
+    <line x1="85" y1="10" x2="115" y2="10"/>
+    <line x1="78" y1="95" x2="122" y2="95"/>
+  </svg>
+
+  <div class="epitaph">MAN.Distilling · 1985 – Until …</div>
+
+</body>
+</html>
