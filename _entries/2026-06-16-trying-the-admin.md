@@ -9,11 +9,11 @@ excerpt: >-
   the logins, testing the index, testing the 404, testing the abilities to to be
   patient with what was built. 
 
-  All thing come to fruition when you keep on trying. here we are trying to push off (images/dtufumfum.jpg) into the world.
+  All thing come to fruition when you keep on trying. here we are trying to push off  [img:dtufumfum.jpg] into the world.
 
   Testing the Buried (images/dtyjdtdtuu.jpg) to see if they can bee seen.
 
-  Just another day and another test of faith. (image 1)
+  Just another day and another test of faith.  [img:0]
 image: /images/qawrgargaeraer.jpg
 images:
   - /images/dtufumfum.jpg
