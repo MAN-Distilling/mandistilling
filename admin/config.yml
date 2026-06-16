@@ -1,10 +1,8 @@
 backend:
   name: git-gateway
   branch: main
-
 media_folder: images
 public_folder: /images
-
 collections:
   - name: entries
     label: Entries
@@ -32,7 +30,6 @@ collections:
         field: { label: Image, name: image, widget: image }
       - { label: YouTube URL, name: youtube, widget: string, required: false }
       - { label: "Order (Art wall position — 1 is first)", name: order, widget: number, required: false, value_type: float }
-
   - name: places
     label: Places
     folder: _places
@@ -62,3 +59,28 @@ collections:
         widget: list
         required: false
         field: { label: Image, name: image, widget: image }
+  - name: words
+    label: Words
+    folder: _words
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Word, name: word, widget: string, hint: "The headword exactly as it will appear" }
+      - { label: Visual Word Image, name: image, widget: image, required: false, hint: "Optional — upload an image of the word if it has a visual/typographic form. Replaces the text headword on the scatter page." }
+      - { label: Pronunciation, name: pronunciation, widget: string, hint: "e.g. won-CLAR-ity" }
+      - { label: Word Type, name: wordtype, widget: string, hint: "e.g. noun — from Latin..." }
+      - label: Category
+        name: category
+        widget: select
+        default: Coined
+        options:
+          - Coined
+          - Erased by Technology
+          - Erased by Political Flattening
+          - Erased by Speed
+          - Erased by Commerce
+          - Erased from Personal Sovereignty
+          - Erased from Inner Life
+          - Erased from the Commons
+      - { label: Definition, name: definition, widget: text }
+      - { label: Mechanism of Loss, name: mechanism, widget: text, required: false, hint: "Why it disappeared. Leave blank for coined words." }
