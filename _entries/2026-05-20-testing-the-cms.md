@@ -1,6 +1,6 @@
 ---
 title: Testing the CMS
-date: May 2026
+date: July 2026
 type: thoughts
 subtypes:
   - Making
