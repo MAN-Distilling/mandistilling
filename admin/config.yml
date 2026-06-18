@@ -84,3 +84,41 @@ collections:
           - Erased from the Commons
       - { label: Definition, name: definition, widget: text }
       - { label: Mechanism of Loss, name: mechanism, widget: text, required: false, hint: "Why it disappeared. Leave blank for coined words." }
+  - name: books
+    label: Books
+    folder: _books
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Author, name: author, widget: string }
+      - label: Status
+        name: status
+        widget: select
+        default: read
+        options: [reading, read, recommend]
+      - label: Genre
+        name: genre
+        widget: select
+        default: Fiction
+        options:
+          - Fiction
+          - Philosophy
+          - Poetry
+          - Science Fiction
+          - Psychology & Mind
+          - Self-Development
+          - Spirituality & Religion
+          - History & Politics
+          - Finance & Economics
+          - Metaphysics & Occult
+          - Biography & Memoir
+          - Science
+          - Fantasy & Mythology
+          - Drama & Theatre
+          - Nature & Outdoors
+          - Law & Ethics
+          - Children & YA
+          - Graphic Novel & Comics
+      - { label: "Rating (0-5)", name: rating, widget: number, required: false, value_type: int, min: 0, max: 5 }
+      - { label: Notes, name: notes, widget: text, required: false }
