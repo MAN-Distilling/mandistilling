@@ -3555,27 +3555,38 @@ function pinSearchFetch(query) {
   fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&q=' + encodeURIComponent(query), {
     headers: { 'Accept-Language': 'en' }
   })
-  .then(r => r.json())
-  .then(data => {
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
     if (!data.length) {
       results.innerHTML = '<div style="padding:0.75rem 1rem; font-size:13px; color:var(--ink-faint);">No results found</div>';
       return;
     }
-    results.innerHTML = data.map((place, i) => {
-      const name = place.display_name;
-      const lat = parseFloat(place.lat).toFixed(5);
-      const lng = parseFloat(place.lon).toFixed(5);
-      return '<div onclick="pinSearchSelect(' + lat + ',' + lng + ','' +
-        name.replace(/'/g,"&#39;").split(',').slice(0,2).join(',') + '')" style="' +
-        'padding:0.7rem 1rem; font-size:13px; color:var(--ink); cursor:pointer;' +
-        'border-bottom:0.5px solid var(--border); transition:background 0.15s;' +
-        '" onmouseover="this.style.background='var(--stone)'" onmouseout="this.style.background='';">' +
-        '<div style="font-weight:500;">' + name.split(',').slice(0,2).join(',').trim() + '</div>' +
-        '<div style="font-size:11px; color:var(--ink-faint); margin-top:2px;">' + lat + ', ' + lng + '</div>' +
-        '</div>';
+    results.innerHTML = data.map(function(place) {
+      var name = place.display_name;
+      var shortName = name.split(',').slice(0,2).join(',').trim();
+      var lat = parseFloat(place.lat).toFixed(5);
+      var lng = parseFloat(place.lon).toFixed(5);
+      var div = document.createElement('div');
+      div.style.cssText = 'padding:0.7rem 1rem; font-size:13px; color:var(--ink); cursor:pointer; border-bottom:0.5px solid var(--border); transition:background 0.15s;';
+      div.innerHTML = '<div style="font-weight:500;">' + shortName + '</div>' +
+        '<div style="font-size:11px; color:var(--ink-faint); margin-top:2px;">' + lat + ', ' + lng + '</div>';
+      div.addEventListener('mouseover', function() { this.style.background = 'var(--stone)'; });
+      div.addEventListener('mouseout', function() { this.style.background = ''; });
+      div.addEventListener('click', function() { pinSearchSelect(parseFloat(lat), parseFloat(lng), shortName); });
+      return div.outerHTML;
     }).join('');
+    // Re-attach click handlers since outerHTML loses them
+    Array.from(results.children).forEach(function(div, i) {
+      var place = data[i];
+      var shortName = place.display_name.split(',').slice(0,2).join(',').trim();
+      var lat = parseFloat(place.lat).toFixed(5);
+      var lng = parseFloat(place.lon).toFixed(5);
+      div.addEventListener('click', function() { pinSearchSelect(parseFloat(lat), parseFloat(lng), shortName); });
+      div.addEventListener('mouseover', function() { this.style.background = 'var(--stone)'; });
+      div.addEventListener('mouseout', function() { this.style.background = ''; });
+    });
   })
-  .catch(() => {
+  .catch(function() {
     results.innerHTML = '<div style="padding:0.75rem 1rem; font-size:13px; color:var(--ink-faint);">Search failed — check connection</div>';
   });
 }
@@ -4825,12 +4836,9 @@ function toggleReadingSection(id) {
       return Promise.all(mdFiles.map(f =>
         fetch(f.download_url).then(r => r.text()).then(text => {
           const fm = {};
-          const match = text.match(/^---
-([\s\S]*?)
----/);
+          const match = text.match(/^---[\r\n]([\s\S]*?)[\r\n]---/);
           if (match) {
-            match[1].split('
-').forEach(line => {
+            match[1].split('\n').forEach(line => {
               const [k, ...v] = line.split(':');
               if (k && v.length) fm[k.trim()] = v.join(':').trim().replace(/^['"]|['"]$/g, '');
             });
