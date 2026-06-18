@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Dark mode: apply class before paint to prevent CLS flash -->
+<script>
+(function(){
+  var m = localStorage.getItem('colorMode');
+  if (m !== 'light') document.documentElement.classList.add('dark-mode');
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MAN...Distilling — Thoughts. Traveled. Arts. Distilled.</title>
 
@@ -67,15 +74,19 @@
 </script>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<!-- Fonts — non-render-blocking with swap -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"></noscript>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js" defer></script>
 <style>
   :root {
     --ink: #1a2820;
     --ink-mid: #3a5044;
     --ink-light: #6a8878;
-    --ink-faint: #a8bfb0;
+    --ink-faint: #8aa89a; /* bumped for contrast AA compliance */
     --sage: #4a7a5e;
     --sage-light: #d4e6db;
     --slate: #2e3f48;
@@ -85,6 +96,18 @@
     --serif: 'Lora', Georgia, serif;
     --sans: 'DM Sans', system-ui, sans-serif;
     --border: #c8d8d0;
+  }
+
+  /* Prevent font swap layout shift */
+  @font-face {
+    font-family: 'Lora';
+    font-display: swap;
+    src: local('Lora');
+  }
+  @font-face {
+    font-family: 'DM Sans';
+    font-display: swap;
+    src: local('DM Sans');
   }
 
   /* ── DARK MODE — full night ── */
@@ -967,6 +990,50 @@
 
   .reading-section-label:first-child { margin-top: 0; }
 
+  /* ── READING ACCORDION ── */
+  .reading-accordion {
+    margin-bottom: 0.5rem;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .reading-accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    user-select: none;
+    transition: color 0.2s;
+  }
+  .reading-accordion-header:hover { color: var(--ink); }
+  .reading-accordion-arrow {
+    font-size: 13px;
+    color: var(--sage);
+    transition: transform 0.25s;
+    display: inline-block;
+  }
+  .reading-accordion-arrow.open { transform: rotate(90deg); }
+  .reading-accordion-count {
+    font-weight: 300;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+  .reading-accordion-body {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s ease;
+  }
+  .reading-accordion-body.open {
+    max-height: 9999px;
+  }
+
   /* Filter bar */
   .reading-filters {
     display: flex;
@@ -1578,6 +1645,32 @@
   }
 
   /* ── NAV TOGGLE ── */
+  .nav-dark-toggle {
+    background: transparent;
+    border: 0.5px solid rgba(255,255,255,0.18);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #a8bfb0;
+    padding: 0;
+    flex-shrink: 0;
+    transition: border-color 0.2s, transform 0.5s;
+    margin-left: auto;
+    margin-right: 0.5rem;
+  }
+  .nav-dark-toggle:hover {
+    border-color: rgba(255,255,255,0.4);
+    transform: rotate(180deg);
+  }
+  html.dark-mode .nav-dark-toggle {
+    border-color: rgba(255,255,255,0.12);
+    color: #6aab8a;
+  }
+
   .nav-toggle {
     display: flex;
     align-items: center;
@@ -1600,6 +1693,7 @@
     /* Nav */
     nav { padding: 0 1.25rem; }
 
+    .nav-dark-toggle { width: 28px; height: 28px; }
     .nav-toggle { display: flex; }
 
     .nav-links {
@@ -1817,7 +1911,7 @@
 
   @media print { .scroll-top { display: none !important; } }
 
-  /* ── READING PROGRESS BAR ── */
+  
   .progress-bar {
     position: fixed;
     top: 0;
@@ -1842,6 +1936,12 @@
 <nav>
   <div class="logo" onclick="showPage('home')">MAN<span>...</span>Distilling</div>
   <button class="nav-toggle" id="nav-toggle" aria-label="Menu">∴</button>
+  <button onclick="toggleMode()" title="Toggle day/night" class="nav-dark-toggle" aria-label="Toggle dark mode">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px;">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="M 12 2 A 10 10 0 0 0 12 22 Z" fill="currentColor" opacity="0.5"/>
+    </svg>
+  </button>
   <ul class="nav-links" id="nav-links">
     <li><a href="#/projects" data-page="projects">Projects</a></li>
     <li><a href="#/thoughts" data-page="thoughts">Thoughts</a></li>
@@ -1851,6 +1951,8 @@
     <li><a href="#/links" data-page="links">Links</a></li>
   </ul>
 </nav>
+
+<main id="main-content">
 
 <!-- ════════════════════════════════════════
      HOME
@@ -1870,20 +1972,7 @@
   </div>
 
   <div class="home-hero" style="position:relative;">
-    <button onclick="toggleMode()" title="Toggle day/night" style="
-      position:absolute; top:1rem; right:1rem;
-      width:32px; height:32px; border-radius:50%;
-      border:0.5px solid rgba(255,255,255,0.25);
-      background:transparent; cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-      transition: border-color 0.2s, transform 0.4s;
-      padding:0;
-    " onmouseover="this.style.transform='rotate(180deg)'" onmouseout="this.style.transform='rotate(0deg)'">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#a8bfb0" stroke-width="1.5" style="width:18px;height:18px;">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M 12 2 A 10 10 0 0 0 12 22 Z" fill="#a8bfb0" opacity="0.5"/>
-      </svg>
-    </button>
+
     <div class="hero-line">Thoughts. Traveled. Arts.<br>
     <span class="hero-distilled-wrap">
       <span class="hero-distilled">Distilled.</span>
@@ -2232,88 +2321,109 @@ This page is not for everyone. That is entirely the point.</div>
     <div style="font-family:var(--serif); font-size:38px; font-weight:400; color:var(--ink); margin-bottom:0.35rem;">Reading</div>
     <div style="font-size:13px; color:var(--ink-faint); margin-bottom:2rem; font-style:italic;">Read. Reading. Recommend.</div>
 
-    <!-- Currently Reading -->
-    <div class="reading-section-label">Currently Reading</div>
-    <div class="book-entry">
-      <div>
-        <div class="book-title">Beyond Lies The Wub</div>
-        <div class="book-author">Philip K. Dick</div>
+    <!-- Currently Reading — collapsible -->
+    <div class="reading-accordion">
+      <div class="reading-accordion-header" onclick="toggleReadingSection('currently-reading')">
+        <span>Currently Reading</span>
+        <span class="reading-accordion-arrow" id="arrow-currently-reading">▸</span>
       </div>
-      <div class="book-status reading">Reading</div>
-    </div>
-    <div class="book-entry">
-      <div>
-        <div class="book-title">Churchill&#39;s Black Dog, Kafka&#39;s Mice</div>
-        <div class="book-author">Anthony Storr</div>
+      <div class="reading-accordion-body" id="currently-reading">
+        <div class="book-entry">
+          <div>
+            <div class="book-title">Beyond Lies The Wub</div>
+            <div class="book-author">Philip K. Dick</div>
+          </div>
+          <div class="book-status reading">Reading</div>
+        </div>
+        <div class="book-entry">
+          <div>
+            <div class="book-title">Churchill&#39;s Black Dog, Kafka&#39;s Mice</div>
+            <div class="book-author">Anthony Storr</div>
+          </div>
+          <div class="book-status reading">Reading</div>
+        </div>
+        <div class="book-entry">
+          <div>
+            <div class="book-title">I Am That</div>
+            <div class="book-author">Nisargadatta Maharaj</div>
+          </div>
+          <div class="book-status reading">Reading</div>
+        </div>
+        <div class="book-entry">
+          <div>
+            <div class="book-title">Kabbalah, Science and the Meaning of Life</div>
+            <div class="book-author">Michael Laitman</div>
+          </div>
+          <div class="book-status reading">Reading</div>
+        </div>
+        <div class="book-entry">
+          <div>
+            <div class="book-title">Report to Greco</div>
+            <div class="book-author">Nikos Kazantzakis</div>
+          </div>
+          <div class="book-status reading">Reading</div>
+        </div>
+        <div class="book-entry">
+          <div>
+            <div class="book-title">The Encyclopedia of Ancient and Forbidden Knowledge</div>
+            <div class="book-author">Zolar</div>
+          </div>
+          <div class="book-status reading">Reading</div>
+        </div>
+        <div id="cms-currently-reading"></div>
       </div>
-      <div class="book-status reading">Reading</div>
-    </div>
-    <div class="book-entry">
-      <div>
-        <div class="book-title">I Am That</div>
-        <div class="book-author">Nisargadatta Maharaj</div>
-      </div>
-      <div class="book-status reading">Reading</div>
-    </div>
-    <div class="book-entry">
-      <div>
-        <div class="book-title">Kabbalah, Science and the Meaning of Life</div>
-        <div class="book-author">Michael Laitman</div>
-      </div>
-      <div class="book-status reading">Reading</div>
-    </div>
-    <div class="book-entry">
-      <div>
-        <div class="book-title">Report to Greco</div>
-        <div class="book-author">Nikos Kazantzakis</div>
-      </div>
-      <div class="book-status reading">Reading</div>
-    </div>
-    <div class="book-entry">
-      <div>
-        <div class="book-title">The Encyclopedia of Ancient and Forbidden Knowledge</div>
-        <div class="book-author">Zolar</div>
-      </div>
-      <div class="book-status reading">Reading</div>
     </div>
 
-    <!-- Recommend -->
-    <div class="reading-section-label">Recommend</div>
-    <div class="book-entry">
-      <div>
-        <div class="book-note">I recommend reading a little, a little more and a lot more than what you already read. I have some suggestions when I read more.</div>
+    <!-- Recommend — collapsible -->
+    <div class="reading-accordion">
+      <div class="reading-accordion-header" onclick="toggleReadingSection('recommend')">
+        <span>Recommend</span>
+        <span class="reading-accordion-arrow" id="arrow-recommend">▸</span>
+      </div>
+      <div class="reading-accordion-body" id="recommend">
+        <div class="book-entry">
+          <div>
+            <div class="book-note">I recommend reading a little, a little more and a lot more than what you already read. I have some suggestions when I read more.</div>
+          </div>
+        </div>
+        <div id="cms-recommend"></div>
       </div>
     </div>
 
-    <!-- Read — filters + full list -->
-    <div class="reading-section-label" style="margin-top:3rem;">Read <span style="font-weight:300; text-transform:none; letter-spacing:0; font-size:11px; color:var(--ink-faint);">— 406 books</span></div>
-
-    <div class="reading-filters">
-      <input class="reading-search" id="reading-search" type="text" placeholder="Search title or author…" oninput="filterBooks()">
-      <span class="reading-filter-label">Genre:</span>
-      <button class="reading-filter-btn active" data-genre="All" onclick="setGenre(this)">All</button>
-      <button class="reading-filter-btn" data-genre="Fiction" onclick="setGenre(this)">Fiction</button>
-      <button class="reading-filter-btn" data-genre="Philosophy" onclick="setGenre(this)">Philosophy</button>
-      <button class="reading-filter-btn" data-genre="Poetry" onclick="setGenre(this)">Poetry</button>
-      <button class="reading-filter-btn" data-genre="Science Fiction" onclick="setGenre(this)">Sci-Fi</button>
-      <button class="reading-filter-btn" data-genre="Psychology & Mind" onclick="setGenre(this)">Psychology</button>
-      <button class="reading-filter-btn" data-genre="Self-Development" onclick="setGenre(this)">Self-Dev</button>
-      <button class="reading-filter-btn" data-genre="Spirituality & Religion" onclick="setGenre(this)">Spirituality</button>
-      <button class="reading-filter-btn" data-genre="History & Politics" onclick="setGenre(this)">History</button>
-      <button class="reading-filter-btn" data-genre="Finance & Economics" onclick="setGenre(this)">Finance</button>
-      <button class="reading-filter-btn" data-genre="Metaphysics & Occult" onclick="setGenre(this)">Metaphysics</button>
-      <button class="reading-filter-btn" data-genre="Biography & Memoir" onclick="setGenre(this)">Memoir</button>
-      <button class="reading-filter-btn" data-genre="Science" onclick="setGenre(this)">Science</button>
-      <button class="reading-filter-btn" data-genre="Fantasy & Mythology" onclick="setGenre(this)">Fantasy</button>
-      <button class="reading-filter-btn" data-genre="Drama & Theatre" onclick="setGenre(this)">Drama</button>
-      <button class="reading-filter-btn" data-genre="Nature & Outdoors" onclick="setGenre(this)">Nature</button>
-      <button class="reading-filter-btn" data-genre="Law & Ethics" onclick="setGenre(this)">Ethics</button>
-      <button class="reading-filter-btn" data-genre="Children & YA" onclick="setGenre(this)">Children</button>
-      <button class="reading-filter-btn" data-genre="Graphic Novel & Comics" onclick="setGenre(this)">Comics</button>
+    <!-- Read — collapsible, filters + full list -->
+    <div class="reading-accordion">
+      <div class="reading-accordion-header" onclick="toggleReadingSection('read-section')">
+        <span>Read <span class="reading-accordion-count" id="read-count-label">— 406 books</span></span>
+        <span class="reading-accordion-arrow" id="arrow-read-section">▸</span>
+      </div>
+      <div class="reading-accordion-body" id="read-section">
+        <div class="reading-filters">
+          <input class="reading-search" id="reading-search" type="text" placeholder="Search title or author…" oninput="filterBooks()">
+          <span class="reading-filter-label">Genre:</span>
+          <button class="reading-filter-btn active" data-genre="All" onclick="setGenre(this)">All</button>
+          <button class="reading-filter-btn" data-genre="Fiction" onclick="setGenre(this)">Fiction</button>
+          <button class="reading-filter-btn" data-genre="Philosophy" onclick="setGenre(this)">Philosophy</button>
+          <button class="reading-filter-btn" data-genre="Poetry" onclick="setGenre(this)">Poetry</button>
+          <button class="reading-filter-btn" data-genre="Science Fiction" onclick="setGenre(this)">Sci-Fi</button>
+          <button class="reading-filter-btn" data-genre="Psychology & Mind" onclick="setGenre(this)">Psychology</button>
+          <button class="reading-filter-btn" data-genre="Self-Development" onclick="setGenre(this)">Self-Dev</button>
+          <button class="reading-filter-btn" data-genre="Spirituality & Religion" onclick="setGenre(this)">Spirituality</button>
+          <button class="reading-filter-btn" data-genre="History & Politics" onclick="setGenre(this)">History</button>
+          <button class="reading-filter-btn" data-genre="Finance & Economics" onclick="setGenre(this)">Finance</button>
+          <button class="reading-filter-btn" data-genre="Metaphysics & Occult" onclick="setGenre(this)">Metaphysics</button>
+          <button class="reading-filter-btn" data-genre="Biography & Memoir" onclick="setGenre(this)">Memoir</button>
+          <button class="reading-filter-btn" data-genre="Science" onclick="setGenre(this)">Science</button>
+          <button class="reading-filter-btn" data-genre="Fantasy & Mythology" onclick="setGenre(this)">Fantasy</button>
+          <button class="reading-filter-btn" data-genre="Drama & Theatre" onclick="setGenre(this)">Drama</button>
+          <button class="reading-filter-btn" data-genre="Nature & Outdoors" onclick="setGenre(this)">Nature</button>
+          <button class="reading-filter-btn" data-genre="Law & Ethics" onclick="setGenre(this)">Ethics</button>
+          <button class="reading-filter-btn" data-genre="Children & YA" onclick="setGenre(this)">Children</button>
+          <button class="reading-filter-btn" data-genre="Graphic Novel & Comics" onclick="setGenre(this)">Comics</button>
+        </div>
+        <div class="reading-count" id="reading-count"></div>
+        <div id="read-books-list"></div>
+      </div>
     </div>
-
-    <div class="reading-count" id="reading-count"></div>
-    <div id="read-books-list"></div>
   </div>
 </div>
 
@@ -2356,6 +2466,31 @@ This page is not for everyone. That is entirely the point.</div>
     box-shadow: 0 12px 48px rgba(0,0,0,0.25);
   ">
     <div style="font-family:var(--serif); font-size:18px; color:var(--ink); margin-bottom:1.25rem;">New pin</div>
+
+    <!-- Location search -->
+    <div style="position:relative; margin-bottom:1rem;">
+      <input id="pin-search" type="text" placeholder="Search for a place to move the pin…" style="
+        width:100%; padding:0.7rem 0.9rem; padding-right:2.5rem;
+        border:0.5px solid var(--sage); border-radius:8px;
+        font-family:var(--sans); font-size:14px; color:var(--ink);
+        background:var(--stone); outline:none; box-sizing:border-box;
+      " oninput="pinSearchInput(this.value)" onkeydown="if(event.key==='Enter'){pinSearchGo();event.preventDefault();}">
+      <span onclick="pinSearchGo()" style="
+        position:absolute; right:0.75rem; top:50%; transform:translateY(-50%);
+        cursor:pointer; font-size:14px; color:var(--sage);
+      ">⌕</span>
+      <div id="pin-search-results" style="
+        display:none; position:absolute; top:100%; left:0; right:0;
+        background:var(--white); border:0.5px solid var(--border);
+        border-radius:8px; margin-top:4px; z-index:700;
+        box-shadow:0 8px 24px rgba(0,0,0,0.15); overflow:hidden;
+        max-height:200px; overflow-y:auto;
+      "></div>
+    </div>
+    <div id="pin-coords-display" style="
+      font-size:11px; color:var(--ink-faint); letter-spacing:0.05em;
+      margin-bottom:0.75rem; font-family:var(--sans);
+    "></div>
 
     <input id="pin-title" type="text" placeholder="Place name (optional)" style="
       width:100%; padding:0.7rem 0.9rem; margin-bottom:0.75rem;
@@ -2583,6 +2718,11 @@ This page is not for everyone. That is entirely the point.</div>
 
 </footer>
 
+</main><!-- /#main-content -->
+
+<div class="progress-bar" id="progress-bar"></div>
+<button class="scroll-top" id="scroll-top" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">∴</button>
+
 <script>
 /* ════════════════════════════════════════
    ENTRIES — add yours here. Newest first.
@@ -2714,7 +2854,8 @@ const links = [
   { name: "BitChute",     handle: "zTgKO30hULhF",           url: "https://www.bitchute.com/channel/zTgKO30hULhF", color: "#F2820C", icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4 10.5-6 3.5V8l6 3.5c.6.3.6 1.2 0 1.5z"/></svg>` },
   { name: "Brighteon",    handle: "mandistilling",           url: "https://www.brighteon.com/channels/mandistilling/videos/all", color: "#E8352A", icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4 10.5-6 3.5V8l6 3.5c.6.3.6 1.2 0 1.5z"/></svg>` },
   { name: "Odysee",       handle: "@MAN.Distilling",        url: "https://odysee.com/@MAN.Distilling",            color: "#EF1970", icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm0 4c4.4 0 8 3.6 8 8s-3.6 8-8 8-8-3.6-8-8 3.6-8 8-8zm0 2c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6zm0 2c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4z"/></svg>` },
-  { name: "GanjingWorld",  handle: "mandistilling",          url: "https://www.ganjingworld.com/channel/1ihct4bia5j1M68lWUxhCQjfh1fp0c", color: "#E91E8C", icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 4c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3 1.3-3 3-3zm0 14c-2.5 0-4.7-1.3-6-3.2.1-2 4-3.1 6-3.1s5.9 1.1 6 3.1C16.7 18.7 14.5 20 12 20z"/></svg>` }
+  { name: "GanjingWorld",  handle: "mandistilling",          url: "https://www.ganjingworld.com/channel/1ihct4bia5j1M68lWUxhCQjfh1fp0c", color: "#E91E8C", icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 4c1.7 0 3 1.3 3 3s-1.3 3-3 3-3-1.3-3-3 1.3-3 3-3zm0 14c-2.5 0-4.7-1.3-6-3.2.1-2 4-3.1 6-3.1s5.9 1.1 6 3.1C16.7 18.7 14.5 20 12 20z"/></svg>` },
+  { name: "Etsy",          handle: "OceanDistillations",       url: "https://www.etsy.com/shop/OceanDistillations",  color: "#F56400", icon: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.9 3.5c0-.7.6-1 1.5-1.1l1.4-.2V1H5.5v1.2l1.1.2c.9.1 1.1.5 1.1 1.8v9.4H5.5l-.4-1.9c-.5-2.1-1.4-2.8-3.6-2.8H1v5.8h.5c.4 0 .6-.2.6-.6v-.7h13.7v.7c0 .4.2.6.6.6h.5V9.9h-.5c-2.2 0-3.1.7-3.6 2.8l-.4 1.9h-2.5V3.5zm3.7 10.8H5.5v1.3c0 1.3-.2 1.7-1.1 1.8l-1.1.2V19h15.4v-1.4l-1.4-.2c-.9-.1-1.5-.4-1.5-1.1v-1c-.9.1-1.8.2-2.2.2s-1.3-.1-2.2-.2v1.3-1.1h-2.5c-.4 0-.6-.2-.6-.6v-.6z"/></svg>` }
 ];
 
 /* ════════════════════════════════════════
@@ -2740,9 +2881,9 @@ function entryHTML(e, index) {
         </a>
       </div>`;
   } else if (e.image) {
-    mediaHTML = `<div class="entry-thumb"><img src="${e.image}" alt="${e.title}"></div>`;
+    mediaHTML = `<div class="entry-thumb"><img src="${e.image}" alt="${e.title}" width="220" height="145" loading="lazy"></div>`;
   } else if (e.images && e.images.length > 0) {
-    mediaHTML = `<div class="entry-thumb"><img src="${e.images[0]}" alt="${e.title}" style="border-radius:6px;"></div>`;
+    mediaHTML = `<div class="entry-thumb"><img src="${e.images[0]}" alt="${e.title}" width="220" height="145" loading="lazy" style="border-radius:6px;"></div>`;
   } else {
     mediaHTML = `<div class="entry-thumb" style="font-size:12px; color:var(--ink-faint);">[ image ]</div>`;
   }
@@ -2970,7 +3111,13 @@ function showEntry(index, pushState) {
   const e = entries[index];
   if (!e) return;
 
-  // Hero image
+  // Hero image — build full image array (main + additional, deduped)
+  const mainImg = e.image || '';
+  const additionalImgs = (e.images || []).filter(Boolean);
+  const allEntryImages = mainImg
+    ? [mainImg, ...additionalImgs.filter(i => i !== mainImg)]
+    : additionalImgs;
+
   let heroHTML = '';
   if (e.youtube) {
     const thumbId = e.youtube.includes('youtu.be/')
@@ -2979,10 +3126,23 @@ function showEntry(index, pushState) {
     heroHTML = `<a href="${e.youtube}" target="_blank" rel="noopener">
       <img class="entry-page-hero" src="https://img.youtube.com/vi/${thumbId}/mqdefault.jpg" alt="${e.title}">
     </a>`;
-  } else if (e.image) {
-    heroHTML = `<img class="entry-page-hero" src="${e.image}" alt="${e.title}">`;
-  } else if (e.images && e.images.length > 0) {
-    heroHTML = `<img class="entry-page-hero" src="${e.images[0]}" alt="${e.title}">`;
+  } else if (allEntryImages.length > 0) {
+    const imagesJSON = JSON.stringify(allEntryImages);
+    heroHTML = `<img class="entry-page-hero" src="${allEntryImages[0]}" alt="${e.title}"
+      width="900" height="500"
+      style="cursor:pointer;"
+      onclick="openLightbox(${imagesJSON}, 0)">`;
+    if (allEntryImages.length > 1) {
+      const stripItems = allEntryImages.map((src, i) => {
+        return `<img src="${src}" alt=""
+          onclick="openLightbox(${imagesJSON}, ${i})"
+          style="height:60px;width:auto;object-fit:cover;border-radius:4px;cursor:pointer;
+          opacity:${i === 0 ? 1 : 0.65};border:2px solid ${i === 0 ? 'var(--sage)' : 'transparent'};
+          transition:opacity 0.15s,border-color 0.15s;"
+          onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=${i === 0 ? 1 : 0.65}">`;
+      }).join('');
+      heroHTML += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0.75rem;margin-bottom:1rem;">${stripItems}</div>`;
+    }
   }
 
   // Body with peepholes — handle both real newlines and CMS folded text
@@ -3254,12 +3414,15 @@ function openPinEditor(lat, lng) {
   document.getElementById('pin-editor').style.display = 'block';
   document.getElementById('pin-lat').value = lat.toFixed(5);
   document.getElementById('pin-lng').value = lng.toFixed(5);
+  document.getElementById('pin-coords-display').textContent = '∴ ' + lat.toFixed(5) + ', ' + lng.toFixed(5);
 
   // Reset fields
   document.getElementById('pin-title').value = '';
   document.getElementById('pin-note').value = '';
   document.getElementById('pin-date').value = '';
   document.getElementById('pin-post').value = '';
+  document.getElementById('pin-search').value = '';
+  document.getElementById('pin-search-results').style.display = 'none';
 
   // Reset colour selection
   document.querySelectorAll('.pin-color-swatch').forEach(s => s.classList.remove('selected'));
@@ -3365,6 +3528,87 @@ images: []
   setTimeout(() => {
     document.getElementById('map-save-notice').style.display = 'none';
   }, 6000);
+}
+
+/* ════════════════════════════════════════
+   PIN LOCATION SEARCH (Nominatim)
+════════════════════════════════════════ */
+let pinSearchTimer = null;
+
+function pinSearchInput(val) {
+  clearTimeout(pinSearchTimer);
+  const results = document.getElementById('pin-search-results');
+  if (!val || val.length < 3) { results.style.display = 'none'; return; }
+  pinSearchTimer = setTimeout(() => pinSearchFetch(val), 400);
+}
+
+function pinSearchGo() {
+  const val = document.getElementById('pin-search').value.trim();
+  if (val.length >= 2) pinSearchFetch(val);
+}
+
+function pinSearchFetch(query) {
+  const results = document.getElementById('pin-search-results');
+  results.style.display = 'block';
+  results.innerHTML = '<div style="padding:0.75rem 1rem; font-size:13px; color:var(--ink-faint);">Searching…</div>';
+
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=5&q=' + encodeURIComponent(query), {
+    headers: { 'Accept-Language': 'en' }
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (!data.length) {
+      results.innerHTML = '<div style="padding:0.75rem 1rem; font-size:13px; color:var(--ink-faint);">No results found</div>';
+      return;
+    }
+    results.innerHTML = data.map((place, i) => {
+      const name = place.display_name;
+      const lat = parseFloat(place.lat).toFixed(5);
+      const lng = parseFloat(place.lon).toFixed(5);
+      return '<div onclick="pinSearchSelect(' + lat + ',' + lng + ','' +
+        name.replace(/'/g,"&#39;").split(',').slice(0,2).join(',') + '')" style="' +
+        'padding:0.7rem 1rem; font-size:13px; color:var(--ink); cursor:pointer;' +
+        'border-bottom:0.5px solid var(--border); transition:background 0.15s;' +
+        '" onmouseover="this.style.background='var(--stone)'" onmouseout="this.style.background='';">' +
+        '<div style="font-weight:500;">' + name.split(',').slice(0,2).join(',').trim() + '</div>' +
+        '<div style="font-size:11px; color:var(--ink-faint); margin-top:2px;">' + lat + ', ' + lng + '</div>' +
+        '</div>';
+    }).join('');
+  })
+  .catch(() => {
+    results.innerHTML = '<div style="padding:0.75rem 1rem; font-size:13px; color:var(--ink-faint);">Search failed — check connection</div>';
+  });
+}
+
+function pinSearchSelect(lat, lng, name) {
+  // Move the pending marker to the new location
+  document.getElementById('pin-lat').value = lat;
+  document.getElementById('pin-lng').value = lng;
+  document.getElementById('pin-search-results').style.display = 'none';
+  document.getElementById('pin-search').value = '';
+  document.getElementById('pin-coords-display').textContent = '∴ ' + lat + ', ' + lng;
+
+  // Auto-fill title if empty
+  const titleEl = document.getElementById('pin-title');
+  if (!titleEl.value) titleEl.value = name;
+
+  // Move or create marker on map
+  if (pendingPin) {
+    pendingPin.lat = lat;
+    pendingPin.lng = lng;
+  } else {
+    pendingPin = { lat, lng, color: '#6aab8a', shape: 'circle' };
+  }
+
+  if (pendingMarker) {
+    pendingMarker.setLatLng([lat, lng]);
+  } else if (leafletMap) {
+    pendingMarker = L.marker([lat, lng], {
+      icon: makeDivIcon('#d4a830', 'circle')
+    }).addTo(leafletMap);
+  }
+
+  if (leafletMap) leafletMap.setView([lat, lng], 10);
 }
 
 function cancelPinEditor() {
@@ -3521,13 +3765,8 @@ function toggleMode() {
   localStorage.setItem('colorMode', isDark ? 'dark' : 'light');
 }
 
-// Restore saved mode — default is dark
-const savedMode = localStorage.getItem('colorMode');
-if (savedMode === 'light') {
-  document.documentElement.classList.remove('dark-mode');
-} else {
-  document.documentElement.classList.add('dark-mode');
-}
+// Dark mode already applied pre-paint (inline script in <head>)
+// This ensures toggleMode() still works correctly
 
 /* ════════════════════════════════════════
    HERE RIGHT NOW — global activity feed
@@ -3536,8 +3775,6 @@ function renderNowFeed() {
   const feed = document.getElementById('now-feed');
   if (!feed) return;
 
-  // Sort all entries newest first
-  // Parse dates best-effort: "May 2026", "January 2026" etc.
   const months = { january:0,february:1,march:2,april:3,may:4,june:5,july:6,august:7,september:8,october:9,november:10,december:11 };
 
   function parseDate(str) {
@@ -3551,49 +3788,95 @@ function renderNowFeed() {
     return new Date(str);
   }
 
-  const typeLabel = {
-    thoughts: 'Thought',
-    projects: 'Project',
-    art: 'Art',
-    photo: 'Photo'
-  };
-
   const typeColor = {
     thoughts: '#6aab8a',
     projects: '#5b8fa0',
     art: '#a07a30',
-    photo: '#7a6aab'
+    photo: '#7a6aab',
+    word: '#8a6aab',
+    place: '#4a8a9a'
   };
 
-  const sorted = entries
-    .filter(function(e) { return e.title && e.type && e.type !== 'reading'; })
-    .map(function(e, i) { return { e: e, i: i, d: parseDate(e.date) }; })
-    .sort(function(a, b) { return b.d - a.d; });
+  // Build unified feed items from entries, words, and map pins
+  let feedItems = [];
 
-  if (sorted.length === 0) {
+  // Entries
+  entries
+    .filter(function(e) { return e.title && e.type && e.type !== 'reading'; })
+    .forEach(function(e, i) {
+      feedItems.push({
+        kind: 'entry',
+        label: e.type.charAt(0).toUpperCase() + e.type.slice(1),
+        color: typeColor[e.type] || 'var(--sage)',
+        date: e.date || '',
+        d: parseDate(e.date),
+        title: e.title,
+        excerpt: e.excerpt ? e.excerpt.replace(/\[img:\d+\]/g, '').slice(0, 120) + '…' : '',
+        thumb: e.image || (e.images && e.images[0]) || '',
+        onclick: 'showEntry(' + i + ')'
+      });
+    });
+
+  // Words (allWords is built by the words scatter IIFE — may exist)
+  if (typeof allWords !== 'undefined' && allWords.length) {
+    allWords.forEach(function(w) {
+      if (!w.word) return;
+      feedItems.push({
+        kind: 'word',
+        label: 'Word',
+        color: typeColor.word,
+        date: '',
+        d: new Date(0),
+        title: w.word,
+        excerpt: w.definition ? w.definition.slice(0, 120) + '…' : (w.category || ''),
+        thumb: '',
+        onclick: "showPage('words')"
+      });
+    });
+  }
+
+  // Map pins
+  if (typeof mapPins !== 'undefined' && mapPins.length) {
+    mapPins.forEach(function(p) {
+      if (!p.title && !p.note) return;
+      feedItems.push({
+        kind: 'place',
+        label: 'Place',
+        color: typeColor.place,
+        date: p.date || '',
+        d: parseDate(p.date),
+        title: p.title || 'Unnamed place',
+        excerpt: p.note ? p.note.slice(0, 120) + '…' : '',
+        thumb: (p.images && p.images[0]) || '',
+        onclick: "showPage('map')"
+      });
+    });
+  }
+
+  // Sort: entries and pins by date, words at bottom (date 0)
+  feedItems.sort(function(a, b) { return b.d - a.d; });
+
+  if (feedItems.length === 0) {
     feed.innerHTML = '<p style="color:var(--ink-faint); font-style:italic; font-size:15px;">Nothing published yet. The feed fills as you add entries.</p>';
     return;
   }
 
-  feed.innerHTML = sorted.map(function(item) {
-    const e = item.e;
-    const label = typeLabel[e.type] || e.type;
-    const color = typeColor[e.type] || 'var(--sage)';
-    const thumb = e.image || (e.images && e.images[0]) || '';
-    const thumbHTML = thumb
-      ? '<img src="' + thumb + '" alt="" style="width:52px; height:52px; object-fit:cover; border-radius:4px; flex-shrink:0;">'
-      : '';
+  feed.innerHTML = feedItems.map(function(item) {
+    const thumbHTML = item.thumb
+      ? '<img src="' + item.thumb + '" alt="" style="width:52px; height:52px; object-fit:cover; border-radius:4px; flex-shrink:0;">'
+      : '<div style="width:52px; height:52px; border-radius:4px; flex-shrink:0; background:var(--border); display:flex; align-items:center; justify-content:center; font-size:18px; color:' + item.color + ';">' +
+          (item.kind === 'word' ? '∴' : item.kind === 'place' ? '⦿' : '') +
+        '</div>';
 
-    return '<div class="tl-item" onclick="showEntry(' + item.i + ')" style="cursor:pointer; display:flex; gap:1rem; align-items:flex-start; padding-left:0; margin-bottom:1.5rem; border-bottom:0.5px solid var(--border); padding-bottom:1.5rem;">' +
-      (thumbHTML ? '<div style="flex-shrink:0;">' + thumbHTML + '</div>' : '') +
+    return '<div onclick="' + item.onclick + '" style="cursor:pointer; display:flex; gap:1rem; align-items:flex-start; margin-bottom:1.5rem; border-bottom:0.5px solid var(--border); padding-bottom:1.5rem;">' +
+      '<div style="flex-shrink:0;">' + thumbHTML + '</div>' +
       '<div style="flex:1; min-width:0;">' +
         '<div style="display:flex; gap:0.6rem; align-items:center; margin-bottom:0.3rem;">' +
-          '<span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:' + color + '; font-family:var(--sans);">' + label + '</span>' +
-          '<span style="font-size:10px; color:var(--ink-faint);">·</span>' +
-          '<span style="font-size:11px; color:var(--ink-faint);">' + (e.date || '') + '</span>' +
+          '<span style="font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:' + item.color + '; font-family:var(--sans);">' + item.label + '</span>' +
+          (item.date ? '<span style="font-size:10px; color:var(--ink-faint);">·</span><span style="font-size:11px; color:var(--ink-faint);">' + item.date + '</span>' : '') +
         '</div>' +
-        '<div style="font-family:var(--serif); font-size:17px; color:var(--ink); line-height:1.3; margin-bottom:0.3rem;">' + e.title + '</div>' +
-        (e.excerpt ? '<div style="font-size:13px; color:var(--ink-faint); line-height:1.6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + e.excerpt.replace(/\[img:\d+\]/g, '').slice(0, 120) + '…</div>' : '') +
+        '<div style="font-family:var(--serif); font-size:17px; color:var(--ink); line-height:1.3; margin-bottom:0.3rem;">' + item.title + '</div>' +
+        (item.excerpt ? '<div style="font-size:13px; color:var(--ink-faint); line-height:1.6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + item.excerpt + '</div>' : '') +
       '</div>' +
     '</div>';
   }).join('');
@@ -4515,6 +4798,84 @@ const READ_BOOKS = [
   { title: 'Behold a Pale Horse', author: 'Milton William Cooper', rating: 0, genre: 'History & Politics' },
 ];
 
+/* ════════════════════════════════════════
+   READING ACCORDION
+════════════════════════════════════════ */
+function toggleReadingSection(id) {
+  const body = document.getElementById(id);
+  const arrow = document.getElementById('arrow-' + id);
+  if (!body) return;
+  const isOpen = body.classList.toggle('open');
+  if (arrow) arrow.classList.toggle('open', isOpen);
+}
+
+/* ════════════════════════════════════════
+   CMS BOOKS — fetch from _books/ folder
+════════════════════════════════════════ */
+(function() {
+  const GITHUB_OWNER = 'MAN-Distilling';
+  const GITHUB_REPO  = 'mandistilling';
+  const BOOKS_FOLDER = '_books';
+
+  fetch('https://api.github.com/repos/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/contents/' + BOOKS_FOLDER)
+    .then(r => r.ok ? r.json() : [])
+    .then(files => {
+      if (!Array.isArray(files) || files.length === 0) return;
+      const mdFiles = files.filter(f => f.name.endsWith('.md'));
+      return Promise.all(mdFiles.map(f =>
+        fetch(f.download_url).then(r => r.text()).then(text => {
+          const fm = {};
+          const match = text.match(/^---
+([\s\S]*?)
+---/);
+          if (match) {
+            match[1].split('
+').forEach(line => {
+              const [k, ...v] = line.split(':');
+              if (k && v.length) fm[k.trim()] = v.join(':').trim().replace(/^['"]|['"]$/g, '');
+            });
+          }
+          return fm;
+        })
+      ));
+    })
+    .then(books => {
+      if (!books) return;
+      books.forEach(b => {
+        if (!b.title) return;
+        const status = (b.status || 'read').toLowerCase();
+        const entry = '<div class="book-entry">' +
+          '<div>' +
+            '<div class="book-title">' + b.title + '</div>' +
+            '<div class="book-author">' + (b.author || '') + '</div>' +
+            (b.genre ? '<div class="book-genre">' + b.genre + '</div>' : '') +
+            (b.notes ? '<div class="book-note">' + b.notes + '</div>' : '') +
+          '</div>' +
+          (b.rating > 0 ? '<div class="book-status">' + '★'.repeat(Number(b.rating)) + '☆'.repeat(5 - Number(b.rating)) + '</div>' : '') +
+        '</div>';
+
+        if (status === 'reading') {
+          const el = document.getElementById('cms-currently-reading');
+          if (el) el.insertAdjacentHTML('beforeend', entry);
+        } else if (status === 'recommend') {
+          const el = document.getElementById('cms-recommend');
+          if (el) el.insertAdjacentHTML('beforeend', entry);
+        } else {
+          // Add to READ_BOOKS array and re-render
+          READ_BOOKS.push({
+            title: b.title,
+            author: b.author || '',
+            rating: Number(b.rating) || 0,
+            genre: b.genre || 'Fiction'
+          });
+        }
+      });
+      // Re-render the read list with any new books added
+      if (typeof renderBooks === 'function') renderBooks();
+    })
+    .catch(() => {});
+})();
+
 let activeGenre = 'All';
 
 function renderBooks() {
@@ -5386,8 +5747,5 @@ const WORDS_DATA = [
 })();
 
 </script>
-<div class="progress-bar" id="progress-bar"></div>
-<button class="scroll-top" id="scroll-top" aria-label="Scroll to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">∴</button>
-
 </body>
 </html>
