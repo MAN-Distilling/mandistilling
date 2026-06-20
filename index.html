@@ -2117,10 +2117,10 @@
     <div class="bio-section visible" id="bio-past">
       <div class="bio-section-label">Past</div>
       <p class="bio-block-text">
-        Write about where you came from — the places, people, and moments that shaped the work. This is your origin. Keep it honest, keep it yours.
+        The Past is in front of me known and seen and through this body of works all things explored will reveal the past. Form the passions and skills to the failing forward into the past and the correction of details bring the past to the present moments of what is created.
       </p>
       <p class="bio-block-text">
-        A second paragraph if it needs room. <em>The past is the foundation everything else is built on.</em>
+        The past will be consternated in the present, find out more if you choose to see.
       </p>
     </div>
 
@@ -2145,10 +2145,10 @@
     <div class="bio-section" id="bio-future">
       <div class="bio-section-label">Future</div>
       <p class="bio-block-text">
-        What you're moving toward. Projects forming, places you're going, things you haven't made yet but intend to. This isn't a promise — it's a direction.
+        The future is behind me, unknown yet directed for what comes is from what has passed, made present. Slowly the picture raps into the frame as the present moves further into the past, enlightening clarity to what is unknown and darkness to what is yet to be seen.
       </p>
       <p class="bio-block-text">
-        <em>The horizon keeps moving. That's the point.</em>
+        <em>The horizon is vast that comes to the point, for reasonable men cannot be found on the extremes of the life.</em>
       </p>
     </div>
 
@@ -2767,7 +2767,7 @@ const entries = [
     order: 1,
     title: "Storm Circle",
     excerpt: "Sailboat in a textured storm.",
-    image: "cxvs.jpg",
+    image: "/images/cxvs.jpg",
     youtube: ""
   },
   {
@@ -2777,7 +2777,7 @@ const entries = [
     order: 2,
     title: "The Oblong",
     excerpt: "A line that wanted to be a wound.",
-    image: "etbstbstb.jpg",
+    image: "/images/etbstbstb.jpg",
     youtube: ""
   },
   {
@@ -2796,10 +2796,10 @@ const entries = [
     title: "Peephole Test — Two Works",
     excerpt: "The sailboat exists inside the storm it is sailing through. White on white, texture on texture — the wave is made of the same material as the calm. You find the vessel almost by accident, small against the spiral it cannot see the edge of.[img:0] The oblong piece is something else. A line that wanted to be a wound. Two curves crossing, one of them deciding partway through to become something with depth and heat. The orange at the centre is not painted — it is revealed, like something that was always there under the grey and only needed the right pressure in the right place to show itself.[img:1] Two works. Two different arguments about what a surface can hold.",
     images: [
-      "cxvs.jpg",
-      "etbstbstb.jpg"
+      "/images/cxvs.jpg",
+      "/images/etbstbstb.jpg"
     ],
-    image: "cxvs.jpg",
+    image: "/images/cxvs.jpg",
     youtube: ""
   },
   {
@@ -3004,7 +3004,8 @@ function render() {
 
   // Bio timeline — clickable entries
   const sorted = [...entries].map((e, i) => ({e, i})).reverse();
-  document.getElementById('timeline-container').innerHTML = sorted.map(({e, i}) => `
+  const timelineContainer = document.getElementById('timeline-container');
+  if (timelineContainer) timelineContainer.innerHTML = sorted.map(({e, i}) => `
     <div class="tl-item" onclick="showEntry(${i})" style="cursor:pointer;">
       <div class="tl-date">${e.date}</div>
       <div class="tl-title">${e.title}</div>
@@ -4124,10 +4125,10 @@ function parseMarkdown(text) {
 
   function getField(key) {
     // Handle block scalar: key: >- or key: |
-    // Stop consuming lines when we hit a new top-level YAML key (word followed by colon at line start)
+    // Stop consuming lines when we hit a new top-level YAML key
     const reBlock = new RegExp(`^${key}:\\s*[>|]-?\\n((?:(?!^\\w[\\w-]*:)[\\s\\S])*?)(?=^\\w[\\w-]*:)`, 'gm');
-    const mBlock = yaml.match(reBlock);
-    if (mBlock) {
+    const mBlock = reBlock.exec(yaml);
+    if (mBlock && mBlock[1]) {
       return mBlock[1]
         .split('\n')
         .map(l => l.replace(/^  /, ''))
@@ -4141,11 +4142,17 @@ function parseMarkdown(text) {
   }
 
   function getList(key) {
-    const reBlock = new RegExp(`^${key}:[\\s\\S]*?(?=\\n\\S|$)`, 'm');
+    const reBlock = new RegExp(`^${key}:\\s*\\n((?:[ \\t]+-[^\\n]*\\n?)*)`, 'm');
     const block = yaml.match(reBlock);
-    if (!block) return [];
-    const items = block[0].match(/^\s+-\s+(.+)$/mg);
-    return items ? items.map(i => i.replace(/^\s+-\s+/, '').trim()) : [];
+    if (!block || !block[1]) return [];
+    const items = block[1].match(/^[ \t]+-\s+(.+)$/mg);
+    if (!items) return [];
+    return items.map(i => {
+      let val = i.replace(/^[ \t]+-\s+/, '').trim();
+      // Handle CMS list widget format: 'image: /path' -> '/path'
+      if (val.match(/^\w+:\s+/)) val = val.replace(/^\w+:\s+/, '').trim();
+      return val;
+    });
   }
 
   const SITE_URL = 'https://mandistilling.quest';
