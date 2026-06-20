@@ -170,10 +170,6 @@
     border-top-color: #1a3028;
   }
 
-  html.dark-mode .nav-links a {
-    border-bottom-color: #1a3028;
-  }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
@@ -195,6 +191,7 @@
     top: 0;
     z-index: 100;
     height: 64px;
+    overflow: visible;
   }
 
   .logo {
@@ -1458,7 +1455,7 @@
 
   @media (max-width: 680px) {
     .words-wrap { padding: 2rem 1.25rem 3rem; }
-    .word-headword { font-size: 26px; }
+    .wp-headword { font-size: 26px; }
     .gopher-wrap { padding: 2rem 1.25rem 3rem; }
   }
 
@@ -1685,6 +1682,9 @@
     color: #6aab8a;
     line-height: 1;
     font-family: serif;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   /* ── RESPONSIVE ── */
@@ -2526,7 +2526,6 @@ This page is not for everyone. That is entirely the point.</div>
     <!-- Colour picker -->
     <div style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:0.5rem;">Pin colour</div>
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1rem;">
-      ${PIN_COLORS ? '' : ''}
     </div>
     <div id="color-swatches" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1rem;"></div>
 
@@ -4125,7 +4124,8 @@ function parseMarkdown(text) {
 
   function getField(key) {
     // Handle block scalar: key: >- or key: |
-    const reBlock = new RegExp(`^${key}:\\s*[>|]-?\\n((?:[ \\t].*|\\s*\\n)*)`, 'm');
+    // Stop consuming lines when we hit a new top-level YAML key (word followed by colon at line start)
+    const reBlock = new RegExp(`^${key}:\\s*[>|]-?\\n((?:(?!^\\w[\\w-]*:)[\\s\\S])*?)(?=^\\w[\\w-]*:)`, 'gm');
     const mBlock = yaml.match(reBlock);
     if (mBlock) {
       return mBlock[1]
