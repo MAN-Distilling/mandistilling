@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map Picker — MAN.Distilling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --ink: #1a2820;
+    --ink-mid: #4a6a58;
+    --ink-faint: #7a9a8a;
+    --sage: #6aab8a;
+    --stone: #f4f1ec;
+    --white: #ffffff;
+    --serif: 'Lora', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--ink);
+    color: #e8ede9;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  header {
+    background: #0a1410;
+    border-bottom: 1px solid #1a3028;
+    padding: 0 1.5rem;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .header-title {
+    font-family: var(--serif);
+    font-size: 16px;
+    color: #e8ede9;
+    letter-spacing: 0.04em;
+  }
+  .header-title span { color: #6aab8a; }
+
+  .token-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .token-area input {
+    background: #1a2820;
+    border: 1px solid #2e4438;
+    color: #e8ede9;
+    font-family: var(--sans);
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    width: 220px;
+  }
+
+  .token-area input::placeholder { color: #4a6a58; }
+
+  .btn {
+    background: #6aab8a;
+    color: #0a1410;
+    border: none;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-ghost {
+    background: none;
+    border: 1px solid #2e4438;
+    color: #7a9a8a;
+  }
+  .btn-ghost:hover { border-color: #6aab8a; color: #6aab8a; opacity: 1; }
+
+  .workspace {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  #map {
+    flex: 1;
+    cursor: crosshair;
+  }
+
+  .panel {
+    width: 340px;
+    flex-shrink: 0;
+    background: #0f1a16;
+    border-left: 1px solid #1a3028;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .panel-section {
+    padding: 1.25rem 1.25rem 0;
+    border-bottom: 1px solid #1a3028;
+    padding-bottom: 1.25rem;
+  }
+
+  .panel-section:last-child { border-bottom: none; }
+
+  .panel-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #4a6a58;
+    margin-bottom: 0.75rem;
+  }
+
+  .coords-display {
+    font-family: monospace;
+    font-size: 13px;
+    color: #6aab8a;
+    background: #1a2820;
+    padding: 8px 10px;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    min-height: 34px;
+  }
+
+  .hint {
+    font-size: 11px;
+    color: #4a6a58;
+    line-height: 1.5;
+  }
+
+  .field {
+    margin-bottom: 0.85rem;
+  }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7a9a8a;
+    margin-bottom: 5px;
+  }
+
+  .field input,
+  .field textarea,
+  .field select {
+    width: 100%;
+    background: #1a2820;
+    border: 1px solid #2e4438;
+    color: #e8ede9;
+    font-family: var(--sans);
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus {
+    border-color: #6aab8a;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 70px;
+    line-height: 1.5;
+  }
+
+  .field select option { background: #1a2820; }
+
+  .color-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .color-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.active { border-color: #e8ede9; }
+
+  .shape-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .shape-btn {
+    flex: 1;
+    background: #1a2820;
+    border: 1px solid #2e4438;
+    color: #7a9a8a;
+    font-family: var(--sans);
+    font-size: 11px;
+    padding: 6px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: all 0.15s;
+  }
+  .shape-btn:hover { border-color: #6aab8a; color: #6aab8a; }
+  .shape-btn.active { border-color: #6aab8a; color: #6aab8a; background: #1a3028; }
+
+  .also-post-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle-track {
+    width: 36px;
+    height: 20px;
+    background: #2e4438;
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle-track.on { background: #6aab8a; }
+
+  .toggle-thumb {
+    width: 14px;
+    height: 14px;
+    background: #e8ede9;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: left 0.2s;
+  }
+  .toggle-track.on .toggle-thumb { left: 19px; }
+
+  .toggle-label {
+    font-size: 12px;
+    color: #7a9a8a;
+  }
+
+  .post-fields {
+    display: none;
+    margin-top: 1rem;
+  }
+  .post-fields.visible { display: block; }
+
+  .save-area {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .status {
+    font-size: 12px;
+    color: #6aab8a;
+    min-height: 18px;
+    text-align: center;
+  }
+  .status.error { color: #c0573a; }
+
+  .section-divider {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #2e4438;
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #1a3028;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">MAN<span>...</span>Distilling · Map Picker</div>
+  <div class="token-area">
+    <input type="password" id="token-input" placeholder="GitHub personal access token" autocomplete="off">
+    <button class="btn btn-ghost" onclick="saveToken()">Save</button>
+  </div>
+</header>
+
+<div class="workspace">
+  <div id="map"></div>
+
+  <div class="panel">
+
+    <!-- COORDINATES -->
+    <div class="panel-section">
+      <div class="panel-label">Location</div>
+      <div class="coords-display" id="coords-display">∴ Click the map to place a pin</div>
+      <div class="hint">Click anywhere on the map to drop a pin. Click again to move it.</div>
+    </div>
+
+    <!-- PLACE DETAILS -->
+    <div class="panel-section">
+      <div class="panel-label">Place Details</div>
+
+      <div class="field">
+        <label>Title</label>
+        <input type="text" id="f-title" placeholder="Name of this place">
+      </div>
+
+      <div class="field">
+        <label>Date</label>
+        <input type="text" id="f-date" placeholder="e.g. June 2026">
+      </div>
+
+      <div class="field">
+        <label>Note</label>
+        <textarea id="f-note" placeholder="What happened here. What it meant."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Pin Colour</label>
+        <div class="color-row" id="color-row"></div>
+      </div>
+
+      <div class="field">
+        <label>Pin Shape</label>
+        <div class="shape-row" id="shape-row"></div>
+      </div>
+
+      <div class="field">
+        <label>YouTube URL (optional)</label>
+        <input type="text" id="f-youtube" placeholder="https://youtu.be/...">
+      </div>
+    </div>
+
+    <!-- ALSO CREATE A POST -->
+    <div class="panel-section">
+      <div class="panel-label">Also publish as a Post?</div>
+      <div class="also-post-toggle" onclick="togglePost()">
+        <div class="toggle-track" id="post-toggle-track">
+          <div class="toggle-thumb"></div>
+        </div>
+        <div class="toggle-label">Create an entry on the site too</div>
+      </div>
+
+      <div class="post-fields" id="post-fields">
+        <div class="section-divider">Post settings</div>
+
+        <div class="field">
+          <label>Category</label>
+          <select id="f-type">
+            <option value="projects">Projects</option>
+            <option value="thoughts">Thoughts</option>
+            <option value="art">Art</option>
+            <option value="photo">Photo</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Subtypes (optional)</label>
+          <select id="f-subtypes" multiple style="min-height:80px;">
+            <option>Moving</option><option>Making</option><option>Fixing</option>
+            <option>Seeing</option><option>Recording</option><option>Experimenting</option>
+            <option>Stories</option><option>Wool</option><option>Leather</option>
+            <option>Wood</option><option>Stone</option><option>Air</option>
+            <option>Paint</option><option>Nature</option><option>Humans</option>
+            <option>Society</option><option>Building</option><option>Breaking</option>
+            <option>Work</option><option>Play</option><option>Heart</option>
+            <option>Mind</option><option>Landscape</option><option>People</option>
+            <option>Travel</option><option>Detail</option><option>Urban</option>
+            <option>Abstract</option>
+          </select>
+          <div class="hint" style="margin-top:4px;">Hold Ctrl / Cmd to select multiple</div>
+        </div>
+
+        <div class="field">
+          <label>Excerpt (first lines of the post)</label>
+          <textarea id="f-excerpt" placeholder="The opening lines of what happened here..." style="min-height:100px;"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Main Image URL or path (optional)</label>
+          <input type="text" id="f-image" placeholder="/images/filename.jpg">
+        </div>
+      </div>
+    </div>
+
+    <!-- SAVE -->
+    <div class="save-area">
+      <div class="status" id="status"></div>
+      <button class="btn" id="save-btn" onclick="savePin()" disabled>Save Pin to Site</button>
+      <button class="btn btn-ghost" onclick="resetForm()">Clear & Start Again</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const GITHUB_REPO = 'MAN-Distilling/mandistilling';
+const PIN_COLORS = [
+  { name: "Sage",     value: "#6aab8a" },
+  { name: "Gold",     value: "#d4a830" },
+  { name: "Rust",     value: "#c0573a" },
+  { name: "Sky",      value: "#5b8fa0" },
+  { name: "Lavender", value: "#8a7ab0" },
+  { name: "Stone",    value: "#a8bfb0" },
+  { name: "White",    value: "#e8ede9" },
+];
+const PIN_SHAPES = [
+  { name: "Circle",  value: "circle" },
+  { name: "Diamond", value: "diamond" },
+  { name: "Star",    value: "star" },
+  { name: "Cross",   value: "cross" },
+];
+
+let selectedColor = "#6aab8a";
+let selectedShape = "circle";
+let pinLat = null;
+let pinLng = null;
+let pendingMarker = null;
+let alsoPost = false;
+
+// ── TOKEN ──
+function saveToken() {
+  const t = document.getElementById('token-input').value.trim();
+  if (t) { localStorage.setItem('gh_token', t); setStatus('Token saved.'); }
+}
+function getToken() { return localStorage.getItem('gh_token') || ''; }
+window.addEventListener('load', () => {
+  const t = getToken();
+  if (t) document.getElementById('token-input').value = '••••••••••••••••';
+});
+
+// ── MAP ──
+const map = L.map('map', { zoomControl: true }).setView([20, 0], 2);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap © CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+map.on('click', e => {
+  pinLat = e.latlng.lat;
+  pinLng = e.latlng.lng;
+  document.getElementById('coords-display').textContent =
+    `∴ ${pinLat.toFixed(5)}, ${pinLng.toFixed(5)}`;
+  document.getElementById('save-btn').disabled = false;
+  placePendingMarker();
+});
+
+function placePendingMarker() {
+  if (pendingMarker) map.removeLayer(pendingMarker);
+  const icon = L.divIcon({
+    className: '',
+    html: makePinHTML(selectedColor, selectedShape),
+    iconAnchor: [8, 8]
+  });
+  pendingMarker = L.marker([pinLat, pinLng], { icon }).addTo(map);
+}
+
+function makePinHTML(color, shape) {
+  const c = color || '#6aab8a';
+  if (shape === 'diamond') return `<div style="width:14px;height:14px;background:${c};border:2px solid #e8ede9;transform:rotate(45deg);box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`;
+  if (shape === 'star') return `<div style="font-size:18px;line-height:1;color:${c};text-shadow:0 2px 8px rgba(0,0,0,0.5);">★</div>`;
+  if (shape === 'cross') return `<div style="font-size:18px;line-height:1;color:${c};text-shadow:0 2px 8px rgba(0,0,0,0.5);">✚</div>`;
+  return `<div style="width:14px;height:14px;background:${c};border:2px solid #e8ede9;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.4);"></div>`;
+}
+
+// ── COLOUR SWATCHES ──
+const colorRow = document.getElementById('color-row');
+PIN_COLORS.forEach(c => {
+  const sw = document.createElement('div');
+  sw.className = 'color-swatch' + (c.value === selectedColor ? ' active' : '');
+  sw.style.background = c.value;
+  sw.title = c.name;
+  sw.onclick = () => {
+    selectedColor = c.value;
+    document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+    if (pendingMarker) placePendingMarker();
+  };
+  colorRow.appendChild(sw);
+});
+
+// ── SHAPE BUTTONS ──
+const shapeRow = document.getElementById('shape-row');
+PIN_SHAPES.forEach(s => {
+  const btn = document.createElement('button');
+  btn.className = 'shape-btn' + (s.value === selectedShape ? ' active' : '');
+  btn.textContent = s.name;
+  btn.onclick = () => {
+    selectedShape = s.value;
+    document.querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (pendingMarker) placePendingMarker();
+  };
+  shapeRow.appendChild(btn);
+});
+
+// ── POST TOGGLE ──
+function togglePost() {
+  alsoPost = !alsoPost;
+  const track = document.getElementById('post-toggle-track');
+  const fields = document.getElementById('post-fields');
+  track.classList.toggle('on', alsoPost);
+  fields.classList.toggle('visible', alsoPost);
+}
+
+// ── STATUS ──
+function setStatus(msg, isError) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status' + (isError ? ' error' : '');
+}
+
+// ── SLUG ──
+function slugify(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+// ── DATE PREFIX ──
+function datePrefix() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+// ── GITHUB WRITE ──
+async function writeFile(path, content) {
+  const token = getToken();
+  if (!token) { setStatus('No GitHub token saved.', true); return false; }
+
+  // Check if file exists (to get sha for update)
+  let sha = null;
+  try {
+    const check = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+      headers: { Authorization: `token ${token}` }
+    });
+    if (check.ok) {
+      const data = await check.json();
+      sha = data.sha;
+    }
+  } catch(e) {}
+
+  const body = { message: `Add place: ${path}`, content: btoa(unescape(encodeURIComponent(content))) };
+  if (sha) body.sha = sha;
+
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `token ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+
+  return res.ok;
+}
+
+// ── SAVE ──
+async function savePin() {
+  if (!pinLat || !pinLng) { setStatus('Drop a pin on the map first.', true); return; }
+
+  const token = getToken();
+  if (!token) { setStatus('Enter and save your GitHub token first.', true); return; }
+
+  const title   = document.getElementById('f-title').value.trim() || 'Untitled Place';
+  const date    = document.getElementById('f-date').value.trim();
+  const note    = document.getElementById('f-note').value.trim();
+  const youtube = document.getElementById('f-youtube').value.trim();
+  const prefix  = datePrefix();
+  const slug    = slugify(title);
+
+  document.getElementById('save-btn').disabled = true;
+  setStatus('Saving place…');
+
+  // Build place markdown
+  const placeYaml = `---
+title: ${title}
+lat: ${pinLat.toFixed(6)}
+lng: ${pinLng.toFixed(6)}
+date: ${date}
+note: "${note.replace(/"/g, '\\"')}"
+color: "${selectedColor}"
+shape: ${selectedShape}
+postTitle: ${alsoPost ? title : ''}
+${youtube ? `youtube: ${youtube}` : ''}
+---
+`;
+
+  const placePath = `_places/${prefix}-${slug}.md`;
+  const placeOk = await writeFile(placePath, placeYaml);
+
+  if (!placeOk) {
+    setStatus('Failed to save place. Check your token and try again.', true);
+    document.getElementById('save-btn').disabled = false;
+    return;
+  }
+
+  // Also create entry post if toggled
+  if (alsoPost) {
+    setStatus('Place saved. Creating post…');
+
+    const type     = document.getElementById('f-type').value;
+    const excerpt  = document.getElementById('f-excerpt').value.trim();
+    const image    = document.getElementById('f-image').value.trim();
+    const subtypesEl = document.getElementById('f-subtypes');
+    const subtypes = Array.from(subtypesEl.selectedOptions).map(o => o.value);
+    const displayDate = date || new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+    const subtypesYaml = subtypes.length
+      ? `subtypes:\n${subtypes.map(s => `  - ${s}`).join('\n')}`
+      : 'subtypes: []';
+
+    const entryYaml = `---
+title: ${title}
+date: ${displayDate}
+type: ${type}
+${subtypesYaml}
+excerpt: >-
+  ${excerpt.split('\n').join('\n  ')}
+${image ? `image: ${image}` : ''}
+${youtube ? `youtube: ${youtube}` : ''}
+---
+`;
+
+    const entryPath = `_entries/${prefix}-${slug}.md`;
+    const entryOk = await writeFile(entryPath, entryYaml);
+
+    if (!entryOk) {
+      setStatus('Place saved but post failed. Check token.', true);
+      document.getElementById('save-btn').disabled = false;
+      return;
+    }
+  }
+
+  setStatus(alsoPost ? '∴ Place and post saved to GitHub.' : '∴ Place saved to GitHub.');
+  document.getElementById('save-btn').disabled = false;
+}
+
+// ── RESET ──
+function resetForm() {
+  pinLat = pinLng = null;
+  if (pendingMarker) { map.removeLayer(pendingMarker); pendingMarker = null; }
+  document.getElementById('coords-display').textContent = '∴ Click the map to place a pin';
+  document.getElementById('save-btn').disabled = true;
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-date').value = '';
+  document.getElementById('f-note').value = '';
+  document.getElementById('f-youtube').value = '';
+  document.getElementById('f-excerpt').value = '';
+  document.getElementById('f-image').value = '';
+  document.getElementById('f-subtypes').selectedIndex = -1;
+  if (alsoPost) togglePost();
+  setStatus('');
+}
+</script>
+</body>
+</html>
