@@ -1,0 +1,22 @@
+/* MAN.Distilling — CMS mobile sidebar collapse */
+
+@media (max-width: 800px) {
+
+  [class*="SidebarContainer"] {
+    transition: transform 0.25s ease, opacity 0.25s ease !important;
+    transform-origin: left top;
+  }
+
+  body.sidebar-collapsed [class*="SidebarContainer"] {
+    transform: translateX(-270px) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  /* Make Collections heading look tappable */
+  [class*="SidebarContainer"] h2 {
+    cursor: pointer;
+    user-select: none;
+  }
+
+}
