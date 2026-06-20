@@ -3,6 +3,8 @@ backend:
   branch: main
 media_folder: images
 public_folder: /images
+custom_css: /admin/custom.css
+custom_js: /admin/custom.js
 collections:
   - name: entries
     label: Entries
@@ -11,7 +13,7 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Date, name: date, widget: date, format: MMMM YYYY }
+      - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, hint: "Pick the date. Displays as e.g. June 20 2026." }
       - label: Type
         name: type
         widget: select
@@ -21,7 +23,8 @@ collections:
         widget: select
         multiple: true
         options: [Moving, Making, Fixing, Seeing, Recording, Experimenting, Stories, Wool, Leather, Wood, Stone, Air, Paint, Nature, Humans, Society, Building, Breaking, Work, Play, Heart, Mind, Landscape, People, Travel, Detail, Urban, Abstract]
-      - { label: Excerpt, name: excerpt, widget: text }
+      - { label: Body, name: body, widget: text, hint: "The full text of the post. Use [img:0], [img:1] etc to place peephole images inline." }
+      - { label: Excerpt, name: excerpt, widget: text, required: false, hint: "Leave blank to auto-pull the first 3 lines from Body." }
       - { label: Main Image, name: image, widget: image, required: false }
       - label: Additional Images (for peepholes)
         name: images
