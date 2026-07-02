@@ -3379,7 +3379,9 @@ function parsePlaceMarkdown(text) {
     const reSingle = new RegExp(`^${key}:\\s*(.+)$`, 'm');
     const mSingle = yaml.match(reSingle);
     if (!mSingle) return '';
-    return mSingle[1].trim().replace(/^["']|["']$/g, '');
+    let val = mSingle[1].trim().replace(/^["']|["']$/g, '');
+    val = val.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"').trim();
+    return val;
   }
 
   function getList(key) {
@@ -3765,6 +3767,9 @@ function parseMarkdown(text) {
   const match = text.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return null;
   const yaml = match[1];
+  // The CMS writes the "body" field as the file's actual markdown content,
+  // below the closing --- — not as a body: key inside the frontmatter.
+  const bodyContent = text.slice(match[0].length).replace(/^\n+/, '').trim();
 
   function getField(key) {
     // Handle block scalar: key: >, >-, >+, |, |-, |+
@@ -3781,7 +3786,13 @@ function parseMarkdown(text) {
     // Handle single line: key: value
     const reSingle = new RegExp(`^${key}:\\s*(.+)$`, 'm');
     const mSingle = yaml.match(reSingle);
-    return mSingle ? mSingle[1].trim().replace(/^["']|["']$/g, '') : '';
+    if (!mSingle) return '';
+    let val = mSingle[1].trim().replace(/^["']|["']$/g, '');
+    // Unescape common YAML double-quote escapes so a field that's really
+    // just an escaped newline (e.g. a cleared CMS field saved as "\n")
+    // correctly comes out blank instead of looking like real content.
+    val = val.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"').trim();
+    return val;
   }
 
   function getList(key) {
@@ -3810,7 +3821,7 @@ function parseMarkdown(text) {
   const imagesList = getList('images').map(fixImagePath);
   const allImages = imagesList.length > 0 ? imagesList : (imageField ? [imageField] : []);
 
-  const bodyField   = getField('body');
+  const bodyField   = bodyContent || getField('body');
   const excerptRaw  = getField('excerpt');
 
   // Auto-generate excerpt from first 3 lines of body if excerpt is blank
@@ -3833,6 +3844,7 @@ function parseMarkdown(text) {
     order:    parseFloat(getField('order')) || 999
   };
 }
+
 
 async function fetchEntries() {
   try {
@@ -3912,7 +3924,8 @@ function parseWordMarkdown(text) {
   const fm = match[1];
   function getField(key) {
     const m = fm.match(new RegExp('^' + key + ':\\s*["\']?([^"\'\\n]*)["\']?\\s*$', 'm'));
-    return m ? m[1].trim() : '';
+    if (!m) return '';
+    return m[1].replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"').trim();
   }
   function getMultiline(key) {
     const m = fm.match(new RegExp(key + ':\\s*>-?\\n([\\s\\S]*?)(?=\\n\\w|$)'));
