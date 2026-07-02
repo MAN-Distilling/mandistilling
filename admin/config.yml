@@ -78,6 +78,7 @@ collections:
         default: Coined
         options:
           - Coined
+          - Words Within Words
           - Erased by Technology
           - Erased by Political Flattening
           - Erased by Speed
