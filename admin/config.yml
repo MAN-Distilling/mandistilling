@@ -11,6 +11,7 @@ collections:
     folder: _entries
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: ['date', 'title']
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, hint: "Pick the date. Displays as e.g. June 20 2026." }
@@ -68,7 +69,7 @@ collections:
     create: true
     slug: "{{slug}}"
     fields:
-      - { label: Word, name: word, widget: string, hint: "The headword exactly as it will appear" }
+      - { label: Word, name: word, widget: string, hint: "The headword exactly as it will appear. For the Words Within Words category, wrap the part(s) that should show green in curly braces — e.g. {man}ipul{ate}. Everything outside braces stays white." }
       - { label: Visual Word Image, name: image, widget: image, required: false, hint: "Optional — upload an image of the word if it has a visual/typographic form. Replaces the text headword on the scatter page." }
       - { label: Pronunciation, name: pronunciation, widget: string, hint: "e.g. won-CLAR-ity" }
       - { label: Word Type, name: wordtype, widget: string, hint: "e.g. noun — from Latin..." }
