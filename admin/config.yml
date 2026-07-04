@@ -43,7 +43,7 @@ collections:
       - { label: Title, name: title, widget: string, required: false }
       - { label: Latitude, name: lat, widget: number, value_type: float }
       - { label: Longitude, name: lng, widget: number, value_type: float }
-      - { label: Date, name: date, widget: string, required: false }
+      - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, required: false, hint: "Pick the date. Displays as e.g. June 20 2026." }
       - { label: Note, name: note, widget: text, required: false }
       - label: Pin Colour
         name: color
@@ -68,8 +68,10 @@ collections:
     folder: _words
     create: true
     slug: "{{slug}}"
+    identifier_field: word
     fields:
-      - { label: Word, name: word, widget: string, hint: "The headword exactly as it will appear. For the Words Within Words category, wrap the part(s) that should show green in curly braces — e.g. {man}ipul{ate}. Everything outside braces stays white." }
+      - { label: Word, name: word, widget: string, hint: "The headword exactly as it will appear. For the Words Within Words category, wrap the part(s) that should show green in curly braces — e.g. {man}ipul{ate}. Only the braced part(s) will render green; everything else stays white. Braces themselves are not shown." }
+      - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, required: false, hint: "For Coined words: when it was first used. For Erased words: when it started falling out of use. Shown on the page as 'Manifested on:' for Coined/Words Within Words, or 'Fading since:' for Erased categories. Does not affect the random scatter order." }
       - { label: Visual Word Image, name: image, widget: image, required: false, hint: "Optional — upload an image of the word if it has a visual/typographic form. Replaces the text headword on the scatter page." }
       - { label: Pronunciation, name: pronunciation, widget: string, hint: "e.g. won-CLAR-ity" }
       - { label: Word Type, name: wordtype, widget: string, hint: "e.g. noun — from Latin..." }
