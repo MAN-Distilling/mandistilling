@@ -1398,6 +1398,14 @@
     margin-bottom: 0.85rem;
   }
 
+  .wp-date {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+    font-style: italic;
+    margin-bottom: 0.85rem;
+  }
+
   .wp-mechanism {
     font-size: 13px;
     color: var(--ink-faint);
@@ -3943,6 +3951,7 @@ function parseWordMarkdown(text) {
     category: getField('category') || 'Coined',
     definition: getMultiline('definition'),
     mechanism: getMultiline('mechanism') || null,
+    date: getField('date') || null,
     image: getField('image') || null
   };
 }
@@ -5029,6 +5038,7 @@ function wwwHTML(str) {
         <div class="wp-headword">${w.category === 'Words Within Words' ? wwwHTML(w.word) : w.word}</div>
         <div class="wp-pronunciation">${w.pronunciation}</div>
         <div class="wp-type">${w.type}</div>
+        ${w.date ? `<div class="wp-date">${(w.category === 'Coined' || w.category === 'Words Within Words') ? 'Manifested on: ' : 'Fading since: '}${w.date}</div>` : ''}
         <div class="wp-definition">${w.definition}</div>
         ${w.mechanism ? `<div class="wp-mechanism">${w.mechanism}</div>` : ''}
       `;
