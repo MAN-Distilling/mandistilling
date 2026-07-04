@@ -2814,7 +2814,7 @@ function entryHTML(e, index) {
   ).join('');
 
   const excerptHTML = (e.images && e.images.length > 0)
-    ? renderBodyWithPeepholes(e.excerpt, e.images, index)
+    ? renderBodyWithPeepholes(e.excerpt, e.images, index, e.imageFocus)
     : `<p class="entry-excerpt">${e.excerpt}</p>`;
 
   return `
@@ -3086,7 +3086,7 @@ function showEntry(index, pushState) {
     const cleaned = para.trim();
     if (!cleaned) return '';
     if (e.images && e.images.length > 0) {
-      return renderBodyWithPeepholes(cleaned, e.images, index);
+      return renderBodyWithPeepholes(cleaned, e.images, index, e.imageFocus);
     }
     return `<p>${cleaned}</p>`;
   }).join('');
@@ -3164,13 +3164,14 @@ function openRegisteredLightbox(entryIndex, imgIndex) {
   if (images) openLightbox(images, imgIndex);
 }
 
-function renderBodyWithPeepholes(text, images, entryIndex) {
+function renderBodyWithPeepholes(text, images, entryIndex, imageFocus) {
   if (!images || images.length === 0) return `<p class="entry-excerpt">${text}</p>`;
   registerImages(entryIndex, images);
   const final = text.replace(/\[img:(\d+)\]/g, (match, ref) => {
     const i = parseInt(ref);
     const src = images[i] || '';
-    return `<span class="peephole" onclick="openRegisteredLightbox(${entryIndex},${i})"><img src="${src}" alt=""></span>`;
+    const focus = (imageFocus && imageFocus[i]) || 'center';
+    return `<span class="peephole" onclick="openRegisteredLightbox(${entryIndex},${i})"><img src="${src}" alt="" style="object-position:${focus}"></span>`;
   });
   return `<p class="entry-excerpt">${final}</p>`;
 }
@@ -3817,6 +3818,39 @@ function parseMarkdown(text) {
     });
   }
 
+  // Reads a list where each item can have one field (old format, e.g.
+  // "- image: /path") OR multiple fields (new format, e.g. "- image: /path"
+  // followed by an indented "focus: center" continuation line). Old-format
+  // entries parse identically to getList() above; new-format entries also
+  // pick up their extra fields. Returns an array of plain objects.
+  function getObjectList(key) {
+    const reBlock = new RegExp(`^${key}:\\s*\\n((?:[ \\t]*-[^\\n]*\\n?(?:[ \\t]+\\w+:[^\\n]*\\n?)*)*)`, 'm');
+    const block = yaml.match(reBlock);
+    if (!block || !block[1]) return [];
+    const lines = block[1].split('\n');
+    const items = [];
+    let current = null;
+    function stripQuotes(val) {
+      val = val.trim().replace(/^["']|["']$/g, '');
+      return val.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"').trim();
+    }
+    lines.forEach(line => {
+      if (!line.trim()) return;
+      const dashMatch = line.match(/^(\s*)-\s+(.*)$/);
+      if (dashMatch) {
+        if (current) items.push(current);
+        current = {};
+        const kv = dashMatch[2].match(/^(\w+):\s*(.*)$/);
+        if (kv) current[kv[1]] = stripQuotes(kv[2]);
+      } else if (current) {
+        const kv = line.match(/^\s*(\w+):\s*(.*)$/);
+        if (kv) current[kv[1]] = stripQuotes(kv[2]);
+      }
+    });
+    if (current) items.push(current);
+    return items;
+  }
+
   const SITE_URL = 'https://mandistilling.quest';
 
   function fixImagePath(path) {
@@ -3826,8 +3860,11 @@ function parseMarkdown(text) {
   }
 
   const imageField = fixImagePath(getField('image'));
-  const imagesList = getList('images').map(fixImagePath);
+  const imageObjects = getObjectList('images');
+  const imagesList = imageObjects.map(o => fixImagePath(o.image)).filter(Boolean);
+  const imageFocusList = imageObjects.map(o => o.focus || 'center');
   const allImages = imagesList.length > 0 ? imagesList : (imageField ? [imageField] : []);
+  const allImageFocus = imagesList.length > 0 ? imageFocusList : ['center'];
 
   const bodyField   = bodyContent || getField('body');
   const excerptRaw  = getField('excerpt');
@@ -3849,6 +3886,7 @@ function parseMarkdown(text) {
     image:    imageField,
     youtube:  getField('youtube'),
     images:   allImages,
+    imageFocus: allImageFocus,
     order:    parseFloat(getField('order')) || 999
   };
 }
