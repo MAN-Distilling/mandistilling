@@ -31,7 +31,14 @@ collections:
         name: images
         widget: list
         required: false
-        field: { label: Image, name: image, widget: image }
+        fields:
+          - { label: Image, name: image, widget: image }
+          - label: Peephole Position
+            name: focus
+            widget: select
+            default: center
+            hint: "Which part of the image shows through the small peephole window in the text. Only affects the tiny inline preview — clicking it still opens the full image."
+            options: [top left, top center, top right, center left, center, center right, bottom left, bottom center, bottom right]
       - { label: YouTube URL, name: youtube, widget: string, required: false }
       - { label: "Order (Art wall position — 1 is first)", name: order, widget: number, required: false, value_type: float }
   - name: places
