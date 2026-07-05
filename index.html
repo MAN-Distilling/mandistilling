@@ -2881,7 +2881,7 @@ function renderSection(type) {
   // Standard entry stream — newest first
   const container = document.getElementById(`entries-${type}`);
   if (!container) return;
-  const newest = [...filtered].reverse();
+  const newest = filtered;
   container.innerHTML = newest.length
     ? newest.map(({e, i}) => entryHTML(e, i)).join('')
     : `<p class="filter-empty">${activeFilter ? `No ${type} tagged "${activeFilter}" yet.` : 'Nothing here yet.'}</p>`;
