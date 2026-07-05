@@ -1,7 +1,8 @@
-/* MAN.Distilling — CMS mobile sidebar collapse */
+/* MAN.Distilling — CMS mobile fixes */
 
 @media (max-width: 800px) {
 
+  /* ── SIDEBAR COLLAPSE ── */
   [class*="SidebarContainer"] {
     transition: transform 0.25s ease, opacity 0.25s ease !important;
     transform-origin: left top;
@@ -13,10 +14,139 @@
     pointer-events: none !important;
   }
 
-  /* Make Collections heading look tappable */
   [class*="SidebarContainer"] h2 {
     cursor: pointer;
     user-select: none;
   }
 
+  /* ── MEDIA LIBRARY MODAL ── */
+  [class*="StyledModal"] {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    padding: 12px !important;
+  }
+
+  /* ── IMAGE GRID — 3 per row ── */
+  [class*="Card"] {
+    width: 28vw !important;
+    height: 28vw !important;
+    min-width: 0 !important;
+    margin: 3px !important;
+  }
+
+  [class*="CardImage"] {
+    width: 100% !important;
+    height: 70% !important;
+    object-fit: cover !important;
+  }
+
+  /* Hide filename text to save space */
+  [class*="CardText"],
+  [class*="card-text"],
+  [class*="CardTitle"] {
+    font-size: 8px !important;
+    padding: 2px 3px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+}
+
+/* ── CMS DARK MODE ── */
+
+/* Toggle button — fixed, always visible */
+#cms-dark-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 99999;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid #6aab8a;
+  background: #1a2820;
+  color: #6aab8a;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  transition: background 0.2s;
+}
+
+#cms-dark-toggle:hover { background: #2a3830; }
+
+/* Dark mode overrides */
+body.cms-dark,
+body.cms-dark [class*="App-"] {
+  background-color: #0f1a16 !important;
+  color: #e8ede9 !important;
+}
+
+body.cms-dark [class*="SidebarContainer"],
+body.cms-dark [class*="CollectionContainer"],
+body.cms-dark [class*="NavContainer"] {
+  background-color: #0a1410 !important;
+  box-shadow: none !important;
+}
+
+body.cms-dark [class*="AppHeader"],
+body.cms-dark header {
+  background-color: #0a1410 !important;
+  border-bottom: 1px solid #1a3028 !important;
+}
+
+body.cms-dark [class*="Card"],
+body.cms-dark [class*="EntryCard"] {
+  background-color: #141f1a !important;
+  border-color: #2a4038 !important;
+  color: #e8ede9 !important;
+}
+
+body.cms-dark input,
+body.cms-dark textarea,
+body.cms-dark select,
+body.cms-dark [class*="Input"],
+body.cms-dark [class*="TextArea"] {
+  background-color: #1a2820 !important;
+  color: #e8ede9 !important;
+  border-color: #2a4038 !important;
+}
+
+body.cms-dark [class*="ToolbarContainer"],
+body.cms-dark [class*="EditorContainer"],
+body.cms-dark [class*="EditorControl"] {
+  background-color: #141f1a !important;
+  border-color: #2a4038 !important;
+  color: #e8ede9 !important;
+}
+
+body.cms-dark [class*="StyledModal"],
+body.cms-dark [class*="LibraryTop"],
+body.cms-dark [class*="MediaLibrary"] {
+  background-color: #0f1a16 !important;
+  color: #e8ede9 !important;
+}
+
+body.cms-dark [class*="ActionButton"] {
+  background-color: #2a4038 !important;
+  color: #e8ede9 !important;
+}
+
+body.cms-dark h1,
+body.cms-dark h2,
+body.cms-dark h3,
+body.cms-dark p,
+body.cms-dark span,
+body.cms-dark label,
+body.cms-dark a {
+  color: #e8ede9 !important;
+}
+
+body.cms-dark [class*="active"],
+body.cms-dark [class*="Active"] {
+  background-color: #1a3028 !important;
+  color: #6aab8a !important;
 }

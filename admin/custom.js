@@ -48,3 +48,34 @@
     attachToggle();
   }
 })();
+
+// ── CMS DARK MODE TOGGLE ──
+(function () {
+  function addDarkToggle() {
+    if (document.getElementById('cms-dark-toggle')) return;
+
+    // Restore saved preference
+    if (localStorage.getItem('cms-dark') === 'true') {
+      document.body.classList.add('cms-dark');
+    }
+
+    const btn = document.createElement('button');
+    btn.id = 'cms-dark-toggle';
+    btn.title = 'Toggle dark mode';
+    btn.textContent = document.body.classList.contains('cms-dark') ? '○' : '◑';
+
+    btn.addEventListener('click', () => {
+      const isDark = document.body.classList.toggle('cms-dark');
+      btn.textContent = isDark ? '○' : '◑';
+      localStorage.setItem('cms-dark', isDark);
+    });
+
+    document.body.appendChild(btn);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addDarkToggle);
+  } else {
+    addDarkToggle();
+  }
+})();
