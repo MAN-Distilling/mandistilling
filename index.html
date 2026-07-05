@@ -3356,6 +3356,29 @@ loadSavedPins();
 /* ════════════════════════════════════════
    FETCH PLACES FROM CMS
 ════════════════════════════════════════ */
+// Shared by all content parsers (Entries, Places, Words). Returns a path
+// relative to whatever domain is currently serving the page — this is what
+// makes images work correctly both on the live production site and on any
+// Netlify deploy-preview link, since a relative path always resolves against
+// the page's own current origin, satisfying the img-src 'self' CSP rule
+// everywhere. Absolute http(s) URLs (e.g. YouTube thumbnails) pass through
+// unchanged. Do NOT reintroduce a hardcoded domain here — that was the cause
+// of every image breaking on deploy previews (see July 4 2026 fix).
+function fixImagePath(path) {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return path.startsWith('/') ? path : '/' + path;
+}
+
+// Used only where an absolute URL is genuinely required — specifically the
+// og:image / twitter:image meta tags, since social-media crawlers fetch
+// those independently of the page and can't resolve a relative path.
+function toAbsoluteUrl(path) {
+  if (!path) return path;
+  if (path.startsWith('http') || path.startsWith('data:')) return path;
+  return 'https://mandistilling.quest' + (path.startsWith('/') ? path : '/' + path);
+}
+
 async function fetchPlaces() {
   try {
     const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/_places`);
@@ -3701,8 +3724,8 @@ function getEntryImage(e) {
       : (e.youtube.split('v=')[1] || '').split('&')[0];
     return 'https://img.youtube.com/vi/' + thumbId + '/mqdefault.jpg';
   }
-  if (e.image) return e.image;
-  if (e.images && e.images.length > 0) return e.images[0];
+  if (e.image) return toAbsoluteUrl(e.image);
+  if (e.images && e.images.length > 0) return toAbsoluteUrl(e.images[0]);
   return null;
 }
 
@@ -3849,14 +3872,6 @@ function parseMarkdown(text) {
     });
     if (current) items.push(current);
     return items;
-  }
-
-  const SITE_URL = 'https://mandistilling.quest';
-
-  function fixImagePath(path) {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return SITE_URL + (path.startsWith('/') ? path : '/' + path);
   }
 
   const imageField = fixImagePath(getField('image'));
