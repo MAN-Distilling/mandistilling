@@ -3841,11 +3841,14 @@ function parseMarkdown(text) {
     });
   }
 
-  // Reads a list where each item can have one field (old format, e.g.
-  // "- image: /path") OR multiple fields (new format, e.g. "- image: /path"
-  // followed by an indented "focus: center" continuation line). Old-format
-  // entries parse identically to getList() above; new-format entries also
-  // pick up their extra fields. Returns an array of plain objects.
+  // Reads a list where each item can be: a bare scalar (oldest format, e.g.
+  // "- /images/foo.jpg" — how Decap saves single-field lists, used by every
+  // post made before July 4 2026), a single "key: value" line (e.g.
+  // "- image: /path"), or that same line plus an indented continuation line
+  // for a second field (e.g. "- image: /path" then "  focus: center").
+  // All three parse correctly; bare scalars are stored under "image" since
+  // that's the only field this is currently used for. Returns an array of
+  // plain objects.
   function getObjectList(key) {
     const reBlock = new RegExp(`^${key}:\\s*\\n((?:[ \\t]*-[^\\n]*\\n?(?:[ \\t]+\\w+:[^\\n]*\\n?)*)*)`, 'm');
     const block = yaml.match(reBlock);
@@ -3864,7 +3867,12 @@ function parseMarkdown(text) {
         if (current) items.push(current);
         current = {};
         const kv = dashMatch[2].match(/^(\w+):\s*(.*)$/);
-        if (kv) current[kv[1]] = stripQuotes(kv[2]);
+        if (kv) {
+          current[kv[1]] = stripQuotes(kv[2]);
+        } else {
+          // Bare scalar — no "key:" prefix at all, e.g. "- /images/foo.jpg"
+          current.image = stripQuotes(dashMatch[2]);
+        }
       } else if (current) {
         const kv = line.match(/^\s*(\w+):\s*(.*)$/);
         if (kv) current[kv[1]] = stripQuotes(kv[2]);
