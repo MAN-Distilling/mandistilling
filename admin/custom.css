@@ -51,6 +51,31 @@
     text-overflow: ellipsis !important;
   }
 
+  /* ── MEDIA LIBRARY BUTTON ROWS — let them wrap instead of hanging off-screen ── */
+  [class*="RowContainer"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    row-gap: 6px !important;
+  }
+
+  [class*="ButtonsContainer"] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  [class*="ActionButton"],
+  [class*="DeleteButton"],
+  [class*="InsertButton"],
+  [class*="UploadButton"] {
+    font-size: 11px !important;
+    padding: 6px 8px !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+  }
+
 }
 
 /* ── CMS DARK MODE ── */
