@@ -15,7 +15,7 @@ collections:
     sortable_fields: ['date', 'title']
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, hint: "Pick the date. Displays as e.g. June 20 2026." }
+      - { label: Date, name: date, widget: datetime, format: MMMM D YYYY HH:mm, date_format: MMMM D YYYY, time_format: true, hint: "Pick the date and time. Time is only used to sort same-day posts correctly — the site still displays just the date." }
       - label: Type
         name: type
         widget: select
