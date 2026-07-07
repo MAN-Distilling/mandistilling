@@ -1,6 +1,6 @@
 ---
 word: Sly-n-tism
-date: July 3 2026
+date: February 1 2022
 pronunciation: SLY-n-tizm
 wordtype: Noun
 category: Coined
