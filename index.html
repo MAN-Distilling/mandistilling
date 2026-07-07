@@ -2756,7 +2756,7 @@ function entryHTML(e, index) {
         <div class="entry-meta">
           <span class="entry-tag ${e.type}">${e.type}</span>
           ${subtypeTags}
-          <span class="entry-date">${e.date}</span>
+          <span class="entry-date">${displayDate(e.date)}</span>
         </div>
         <div class="entry-title">${e.title}</div>
         ${excerptHTML}
@@ -2862,7 +2862,7 @@ function render() {
   const timelineContainer = document.getElementById('timeline-container');
   if (timelineContainer) timelineContainer.innerHTML = sorted.map(({e, i}) => `
     <div class="tl-item" onclick="showEntry(${i})" style="cursor:pointer;">
-      <div class="tl-date">${e.date}</div>
+      <div class="tl-date">${displayDate(e.date)}</div>
       <div class="tl-title">${e.title}</div>
       <div class="tl-tag">${e.type}${(e.subtypes||[]).length ? ' · ' + e.subtypes.join(', ') : ''}</div>
     </div>`).join('');
@@ -3046,7 +3046,7 @@ function showEntry(index, pushState) {
     <div class="entry-page-meta">
       <span class="entry-tag ${e.type}">${e.type}</span>
       ${subtypeTags}
-      <span class="entry-date">${e.date}</span>
+      <span class="entry-date">${displayDate(e.date)}</span>
     </div>
     <div class="entry-page-title">${e.title}</div>
     ${heroHTML}
@@ -3417,6 +3417,15 @@ function renderNowFeed() {
       if (!isNaN(m) && !isNaN(y)) return new Date(y, m, 1);
     }
     return new Date(str);
+  }
+
+  // Strips a trailing time (e.g. "15:30" or "3:30 PM") from a date string so
+  // pages can display just the date, even though the underlying field may now
+  // store a time too (added to break ties between same-day posts — see
+  // config.yml's Entries date field). Sorting should use the raw string via
+  // parseDate above; only display should use this.
+  function displayDate(str) {
+    return (str || '').replace(/\s+\d{1,2}:\d{2}\s*(AM|PM)?$/i, '').trim();
   }
 
   const typeColor = {
