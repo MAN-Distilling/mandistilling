@@ -1,5 +1,6 @@
 ---
 word: Royaly Corrupt Militia Pigs
+date: March 10 2022
 pronunciation: ROY-ul-ee Cor-UPT mih-LISH-uh pigz
 wordtype: Noun
 category: Coined
