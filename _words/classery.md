@@ -1,5 +1,6 @@
 ---
 word: "Classery "
+date: July 3 2026
 pronunciation: Class-ery
 wordtype: Moder Lexicon
 category: Coined
