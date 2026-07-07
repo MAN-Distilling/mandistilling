@@ -1,9 +1,10 @@
 ---
 word: D-is-crime-in-nation
+date: January 8 2021
 pronunciation: D'is-crime-in-nation
 wordtype: Plane sight word
 category: Coined
-definition: >+
+definition: >
   Discrimination is the word buried inside the word. Where the crime is in the
   separation and serration of people in society. Offering different services
   based on race color self identifications, history story, or some other
