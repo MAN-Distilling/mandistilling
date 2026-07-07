@@ -1,5 +1,6 @@
 ---
 word: Testissism
+date: June 2 2026
 pronunciation: Test-is-sism
 wordtype: Action word
 category: Coined
