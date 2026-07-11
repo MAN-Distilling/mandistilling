@@ -19,7 +19,7 @@ collections:
       - label: Type
         name: type
         widget: select
-        options: [projects, thoughts, art, photo]
+        options: [projects, thoughts]
       - label: Subtypes
         name: subtypes
         widget: select
@@ -42,6 +42,7 @@ collections:
             options: [top left, top center, top right, center left, center, center right, bottom left, bottom center, bottom right]
       - { label: YouTube URL, name: youtube, widget: string, required: false }
       - { label: "Order (Art wall position — 1 is first)", name: order, widget: number, required: false, value_type: float }
+
   - name: places
     label: Places
     folder: _places
@@ -71,6 +72,47 @@ collections:
         widget: list
         required: false
         field: { label: Image, name: image, widget: image }
+
+  - name: photos
+    label: Photos
+    folder: _photos
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{uuid}}"
+    fields:
+      - { label: Image, name: image, widget: image, hint: "The only required field — everything else below is optional." }
+      - { label: Title, name: title, widget: string, required: false }
+      - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, required: false }
+      - { label: Gallery Filter Category, name: category, widget: select, required: false, options: [Landscape, People, Travel, Detail, Urban, Nature, Abstract], hint: "Optional — organizes this photo within the gallery's filter if set." }
+      - { label: Description, name: description, widget: text, required: false }
+
+  - name: art
+    label: Art
+    folder: _art
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: ['order', 'date', 'title']
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, hint: "Pick the date. Displays as e.g. June 20 2026." }
+      - label: Medium
+        name: medium
+        widget: select
+        multiple: true
+        options: [Wool, Leather, Wood, Stone, Air, Paint]
+      - { label: Body, name: body, widget: text }
+      - label: Images
+        name: images
+        widget: list
+        required: true
+        min: 1
+        hint: "At least one image is required. Add more to let people page through them on the piece's lightbox."
+        fields:
+          - { label: Image, name: image, widget: image }
+      - { label: Sold, name: sold, widget: boolean, default: false, required: false }
+      - { label: Visible, name: visible, widget: boolean, default: true, required: false, hint: "Turn off to hide this piece from the Art page without deleting it." }
+      - { label: Buy Link, name: buylink, widget: string, required: false, hint: "Leave blank to show a 'Contact for details' button instead of a working link." }
+      - { label: "Order (Art wall position — 1 is first)", name: order, widget: number, required: false, value_type: float }
+
   - name: words
     label: Words
     folder: _words
@@ -78,7 +120,7 @@ collections:
     slug: "{{slug}}"
     identifier_field: word
     fields:
-      - { label: Word, name: word, widget: string, hint: "The headword exactly as it will appear. For the Words Within Words category, wrap the part(s) that should show green in curly braces — e.g. {man}ipul{ate}. Only the braced part(s) will render green; everything else stays white. Braces themselves are not shown." }
+      - { label: Word, name: word, widget: string, hint: "FILL THIS IN FIRST, before anything else on this page — the filename gets locked in from whatever's typed at the very start, and never updates again. The headword exactly as it will appear. For the Words Within Words category, wrap the part(s) that should show green in curly braces — e.g. {man}ipul{ate}. Only the braced part(s) will render green; everything else stays white. Braces themselves are not shown." }
       - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, required: false, hint: "For Coined words: when it was first used. For Erased words: when it started falling out of use. Shown on the page as 'Manifested on:' for Coined/Words Within Words, or 'Fading since:' for Erased categories. Does not affect the random scatter order." }
       - { label: Visual Word Image, name: image, widget: image, required: false, hint: "Optional — upload an image of the word if it has a visual/typographic form. Replaces the text headword on the scatter page." }
       - { label: Pronunciation, name: pronunciation, widget: string, hint: "e.g. won-CLAR-ity" }
@@ -99,6 +141,7 @@ collections:
           - Erased from the Commons
       - { label: Definition, name: definition, widget: text }
       - { label: Mechanism of Loss, name: mechanism, widget: text, required: false, hint: "Why it disappeared. Leave blank for coined words." }
+
   - name: books
     label: Books
     folder: _books
@@ -137,3 +180,73 @@ collections:
           - Graphic Novel & Comics
       - { label: "Rating (0-5)", name: rating, widget: number, required: false, value_type: int, min: 0, max: 5 }
       - { label: Notes, name: notes, widget: text, required: false }
+
+  - name: quotes
+    label: Quotes
+    folder: _quotes
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: Quote, name: quote, widget: text, hint: "The full quote text. Use [like this] for gold emphasis, {like this} for green emphasis." }
+      - { label: "My own quote (shows in gold — uncheck for someone else's in white)", name: mine, widget: boolean, default: true, required: false }
+      - { label: Author, name: author, widget: string, required: false, hint: "Leave blank if this is your own. For others: their name e.g. Marcus Aurelius." }
+      - { label: Source, name: source, widget: string, required: false, hint: "e.g. Meditations, or a conversation, or a letter. Leave blank if unknown." }
+      - { label: "First uttered on", name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, required: false, hint: "Optional — for your own quotes, when you first said it." }
+      - label: "On"
+        name: category
+        widget: select
+        required: false
+        options: [Life, Love, Moving Forward, Moving Backward, People, Society, Nature, Earth, Mind, Work]
+      - { label: Visible, name: visible, widget: boolean, default: true, required: false, hint: "Turn off to hide this quote without deleting it." }
+
+  - name: links
+    label: Links
+    folder: _links
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: ['order', 'name']
+    fields:
+      - label: Platform
+        name: platform
+        widget: select
+        options: [YouTube, Instagram, Rumble, Substack, Patreon, "Buy Me a Coffee", Bluesky, Mastodon, Threads, Gab, MeWe, BitChute, Brighteon, Odysee, GanjingWorld, Etsy, Custom]
+        hint: "Pick a known platform to use its built-in icon and color automatically. Pick Custom to upload your own icon and set your own color below."
+      - { label: Name, name: name, widget: string, hint: "The name shown on the card. Feel free to edit even for a known platform." }
+      - { label: Handle, name: handle, widget: string, required: false, hint: "e.g. @MAN.Distilling" }
+      - { label: URL, name: url, widget: string, hint: "The link this card opens." }
+      - { label: Custom Icon, name: customicon, widget: image, required: false, hint: "Only used when Platform is set to Custom. Gets auto-cropped to a square to match the built-in icons." }
+      - { label: Custom Color, name: customcolor, widget: string, required: false, hint: "Only used when Platform is set to Custom. Hex code for the background wash behind the icon, e.g. #6aab8a." }
+      - { label: Visible, name: visible, widget: boolean, default: true, required: false, hint: "Turn off to remove this link from the site entirely — the other links keep their order." }
+      - { label: "Order (1 is first — new links default to the top until you set this)", name: order, widget: number, required: false, value_type: float }
+
+  - name: bio
+    label: Bio
+    files:
+      - name: bio
+        label: Bio Page
+        file: _bio/bio.md
+        fields:
+          - label: Past
+            name: past
+            widget: markdown
+            hint: "The Past section. Supports bold (**word**) and italic (*word*) formatting. Each blank line creates a new paragraph."
+          - label: Present
+            name: present
+            widget: markdown
+            hint: "The Present section. Supports bold (**word**) and italic (*word*) formatting. Each blank line creates a new paragraph."
+          - label: Future
+            name: future
+            widget: markdown
+            hint: "The Future section. Supports bold (**word**) and italic (*word*) formatting. Each blank line creates a new paragraph."
+
+  - name: colophon
+    label: Colophon
+    files:
+      - name: colophon
+        label: Colophon Page
+        file: _colophon/colophon.md
+        fields:
+          - label: Body
+            name: body
+            widget: markdown
+            hint: "The full colophon text. Supports bold (**word**) and italic (*word*) formatting. Each blank line creates a new paragraph."
