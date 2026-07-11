@@ -1,6 +1,6 @@
 <!--StartFragment-->
 
-Colophon
+Colophon gfhdhdyhdyhdtydytd
 
 This site is a single HTML file. No framework, no database, no platform dependency. The entire structure — navigation, content system, filter logic, image handling, lightbox, entry pages — lives in one document that opens in any browser on any device without a server. It can be emailed, stored on a USB stick, hosted from a Raspberry Pi in a closet. It is as portable as a manuscript and as durable as anything digital can be.
 
