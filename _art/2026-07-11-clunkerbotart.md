@@ -9,4 +9,4 @@ sold: false
 visible: true
 order: 2
 ---
-Lets see what the current of copper can create. 
+Lets see what the current of copper can create when asked about the human majority state...
