@@ -2,7 +2,7 @@
 
 Colophon gfhdhdyhdyhdtydytd
 
-This site is a single HTML file. No framework, no database, no platform dependency. The entire structure — navigation, content system, filter logic, image handling, lightbox, entry pages — lives in one document that opens in any browser on any device without a server. It can be emailed, stored on a USB stick, hosted from a Raspberry Pi in a closet. It is as portable as a manuscript and as durable as anything digital can be.
+This site is a single  HTML file. No framework, no database, no platform dependency. The entire structure — navigation, content system, filter logic, image handling, lightbox, entry pages — lives in one document that opens in any browser on any device without a server. It can be emailed, stored on a USB stick, hosted from a Raspberry Pi in a closet. It is as portable as a manuscript and as durable as anything digital can be.   awrtsergaergasergergerg
 
 The content management system writes posts as markdown files to a GitHub repository. The site fetches those files via the GitHub API on each load and renders them dynamically. No rebuild required. No deployment credits consumed. The writing and the framework are deliberately separated — one can change without touching the other.
 
