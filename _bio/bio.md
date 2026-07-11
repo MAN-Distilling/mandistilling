@@ -3,7 +3,7 @@ past: >-
   <!--StartFragment-->
 
 
-  The Past is in front of me known and seen and through this body of works all things explored will reveal the past. Form the passions and skills to the failing forward into the past and the correction of details bring the past to the present moments of what is created.
+  The Past is in front of me known and seen and through this body of works all things explored will reveal the past. Form the passions and skills to the failing forward into the past and the correction of details bring the past to the present moments of what is created. ertertsertsertsert
 
 
   The past will be consternated in the present, find out more if you choose to see.
@@ -14,7 +14,7 @@ present: >-
   <!--StartFragment-->
 
 
-  Currently sitting at the dock in a bay, watching the tide rise and fall. Waiting for the moment when it all stops, to start. The Ship is almost there, the captain and proVisions are glared and tight in holds loose with wows. A few more projects to do but none to big for the captain and his crew.
+  Currently  sitting at the dock in a bay, watching the tide rise and fall. Waiting for the moment when it all stops, to start. The Ship is almost there, the captain and proVisions are glared and tight in holds loose with wows. A few more projects to do but none to big for the captain and his crew.ertertsertsert
 
 
   A lower back set out of place has injured the time that inspired the time to make space for this website. Many-a night in pain and anguish was the seed to crack, not only a back, but the mind to set oneself towards a way to communicate with the world while away from it all. This site, a dedication to a life worth living. An evolving quest fraught with highs lows mellows and rocking to and frow.
@@ -31,7 +31,7 @@ future: >-
   <!--StartFragment-->
 
 
-  The future is behind me, unknown yet directed for what comes is from what has passed, made present. Slowly the picture raps into the frame as the present moves further into the past, enlightening clarity to what is unknown and darkness to what is yet to be seen.
+  The future is behind me, unknown yet directed for what comes is from what has passed, made present. Slowly the picture raps into the frame as the present moves further into the past, enlightening clarity to what is unknown and darkness to what is yet to be seen.ertesrtsertsert
 
 
   *The horizon is vast that comes to the point, for reasonable men cannot be found on the extremes of the life.*
