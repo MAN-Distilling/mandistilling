@@ -1,5 +1,5 @@
 ---
-quote: "Water Cuts rock, eventually. "
+quote: "Water cuts rock, eventually. "
 mine: true
 source: waterfall inVietnam.
 date: March 16 2017
