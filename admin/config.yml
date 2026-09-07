@@ -13,6 +13,8 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     sortable_fields: ['date', 'title']
+    media_folder: /images/entries
+    public_folder: /images/entries
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime, format: MMMM D YYYY HH:mm, date_format: MMMM D YYYY, time_format: true, hint: "Pick the date and time. Time is only used to sort same-day posts correctly — the site still displays just the date." }
@@ -48,6 +50,8 @@ collections:
     folder: _places
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    media_folder: /images/places
+    public_folder: /images/places
     fields:
       - { label: Title, name: title, widget: string, required: false }
       - { label: Latitude, name: lat, widget: number, value_type: float }
@@ -78,6 +82,8 @@ collections:
     folder: _photos
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{uuid}}"
+    media_folder: /images/photos
+    public_folder: /images/photos
     fields:
       - { label: Image, name: image, widget: image, hint: "The only required field — everything else below is optional." }
       - { label: Title, name: title, widget: string, required: false }
@@ -91,6 +97,8 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     sortable_fields: ['order', 'date', 'title']
+    media_folder: /images/art
+    public_folder: /images/art
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, hint: "Pick the date. Displays as e.g. June 20 2026." }
@@ -98,7 +106,7 @@ collections:
         name: medium
         widget: select
         multiple: true
-        options: [Wool, Leather, Wood, Stone, Air, Paint]
+        options: [Wool, Leather, Wood, Stone, Air, Paint, Silicon Hallucinations]
       - { label: Body, name: body, widget: text }
       - label: Images
         name: images
@@ -119,6 +127,8 @@ collections:
     create: true
     slug: "{{slug}}"
     identifier_field: word
+    media_folder: /images/words
+    public_folder: /images/words
     fields:
       - { label: Word, name: word, widget: string, hint: "FILL THIS IN FIRST, before anything else on this page — the filename gets locked in from whatever's typed at the very start, and never updates again. The headword exactly as it will appear. For the Words Within Words category, wrap the part(s) that should show green in curly braces — e.g. {man}ipul{ate}. Only the braced part(s) will render green; everything else stays white. Braces themselves are not shown." }
       - { label: Date, name: date, widget: datetime, format: MMMM D YYYY, date_format: MMMM D YYYY, time_format: false, required: false, hint: "For Coined words: when it was first used. For Erased words: when it started falling out of use. Shown on the page as 'Manifested on:' for Coined/Words Within Words, or 'Fading since:' for Erased categories. Does not affect the random scatter order." }
@@ -185,8 +195,10 @@ collections:
     label: Quotes
     folder: _quotes
     create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    slug: "{{year}}-{{month}}-{{day}}-{{title}}"
+    identifier_field: title
     fields:
+      - { label: "Title (internal — for CMS list only, not shown on site. Keep it short.)", name: title, widget: string, hint: "Short label for finding this quote in the CMS list. Never displayed on the site." }
       - { label: Quote, name: quote, widget: text, hint: "The full quote text. Use [like this] for gold emphasis, {like this} for green emphasis." }
       - { label: "My own quote (shows in gold — uncheck for someone else's in white)", name: mine, widget: boolean, default: true, required: false }
       - { label: Author, name: author, widget: string, required: false, hint: "Leave blank if this is your own. For others: their name e.g. Marcus Aurelius." }
@@ -205,6 +217,8 @@ collections:
     create: true
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     sortable_fields: ['order', 'name']
+    media_folder: /images/links
+    public_folder: /images/links
     fields:
       - label: Platform
         name: platform

@@ -3,18 +3,9 @@
 @media (max-width: 800px) {
 
   /* ── SIDEBAR COLLAPSE ── */
-  [class*="SidebarContainer"] {
-    transition: transform 0.25s ease, opacity 0.25s ease !important;
-    transform-origin: left top;
-  }
-
-  body.sidebar-collapsed [class*="SidebarContainer"] {
-    transform: translateX(-270px) !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-  }
-
-  [class*="SidebarContainer"] h2 {
+  /* Collapse is handled directly via JS on the aside element —
+     no body class needed. Just make the heading look tappable. */
+  aside h2 {
     cursor: pointer;
     user-select: none;
   }

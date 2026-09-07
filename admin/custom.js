@@ -5,18 +5,15 @@
   if (window.innerWidth > 800) return;
 
   function attachToggle() {
-    // Decap CMS renders async so we wait for the heading to appear
-    const headings = document.querySelectorAll('h2, [class*="collection"] h2, [class*="Nav"] h2');
+    // Find the h2 with text "Collections" — Decap renders async so we poll
     let collectionsHeading = null;
-
-    headings.forEach(h => {
+    document.querySelectorAll('h2').forEach(h => {
       if (h.textContent.trim().toLowerCase() === 'collections') {
         collectionsHeading = h;
       }
     });
 
     if (!collectionsHeading) {
-      // Not rendered yet — try again shortly
       setTimeout(attachToggle, 500);
       return;
     }
@@ -25,23 +22,43 @@
     if (collectionsHeading.dataset.toggleAttached) return;
     collectionsHeading.dataset.toggleAttached = 'true';
 
-    // Add a small visual indicator
-    collectionsHeading.style.display = 'flex';
-    collectionsHeading.style.alignItems = 'center';
-    collectionsHeading.style.justifyContent = 'space-between';
+    // The sidebar is the closest aside ancestor of the heading
+    const sidebar = collectionsHeading.closest('aside');
+    if (!sidebar) {
+      setTimeout(attachToggle, 500);
+      return;
+    }
+
+    // Style the sidebar for animated collapse
+    sidebar.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+    sidebar.style.transformOrigin = 'left top';
+
+    // Arrow indicator on the heading
+    collectionsHeading.style.cssText += 'display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none;';
 
     const arrow = document.createElement('span');
     arrow.textContent = '‹';
-    arrow.style.cssText = 'font-size:20px; color:#6aab8a; margin-left:8px; transition: transform 0.25s;';
+    arrow.style.cssText = 'font-size:20px; color:#6aab8a; margin-left:8px; transition:transform 0.25s; flex-shrink:0;';
     collectionsHeading.appendChild(arrow);
 
+    let collapsed = false;
+
     collectionsHeading.addEventListener('click', () => {
-      const collapsed = document.body.classList.toggle('sidebar-collapsed');
-      arrow.style.transform = collapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+      collapsed = !collapsed;
+      if (collapsed) {
+        sidebar.style.transform = 'translateX(-110%)';
+        sidebar.style.opacity = '0';
+        sidebar.style.pointerEvents = 'none';
+        arrow.style.transform = 'rotate(180deg)';
+      } else {
+        sidebar.style.transform = 'translateX(0)';
+        sidebar.style.opacity = '1';
+        sidebar.style.pointerEvents = '';
+        arrow.style.transform = 'rotate(0deg)';
+      }
     });
   }
 
-  // Start trying once DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', attachToggle);
   } else {

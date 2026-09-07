@@ -1674,8 +1674,8 @@
   .quote-chip.others { color: var(--ink); }
 
   /* Inline bracket syntax */
-  .q-gold { color: #d4a830; }
-  .q-sage  { color: #6aab8a; }
+  .q-gold { color: #f0c040 !important; font-style: normal; font-weight: 600; }
+  .q-sage  { color: #6aab8a !important; font-style: normal; }
 
   /* Quote detail panel — same pattern as word-panel */
   .quote-panel {
@@ -4535,9 +4535,12 @@ async function fetchBio() {
 }
 
 function parseBioMarkdown(text) {
-  // Decap CMS writes each field as a YAML key in the frontmatter when
-  // using the files collection with markdown widgets. The field content
-  // is written as a block scalar (| or >) so we need the block reader.
+  // Decap CMS markdown widgets wrap content in <!--StartFragment--> /
+  // <!--EndFragment--> HTML comments. Strip them before parsing.
+  text = text
+    .replace(/<!--StartFragment-->/g, '')
+    .replace(/<!--EndFragment-->/g, '');
+
   const match = text.match(/^---\n([\s\S]*?)\n---/);
   if (!match) return null;
   const yaml = match[1];
@@ -4607,25 +4610,31 @@ async function fetchColophon() {
 }
 
 function parseColophonMarkdown(text) {
-  const match = text.match(/^---\n([\s\S]*?)\n---/);
-  if (!match) return null;
-  const yaml = match[1];
+  if (!text || !text.trim()) return null;
 
-  function getBlock(key) {
-    const reBlock = new RegExp('^' + key + ':\\s*[|>][-+]?\\n((?:(?!^\\w[\\w-]*:)[\\s\\S])*)', 'gm');
+  // Decap CMS files collections with markdown widgets write plain markdown
+  // (no YAML frontmatter) — just the body content directly, sometimes
+  // wrapped in <!--StartFragment-->...<!--EndFragment--> HTML comments.
+  // Strip those comment wrappers if present.
+  let body = text
+    .replace(/<!--StartFragment-->/g, '')
+    .replace(/<!--EndFragment-->/g, '')
+    .trim();
+
+  // Also handle the case where Decap does write YAML frontmatter (belt and
+  // braces — future-proof if CMS behaviour changes).
+  const fmMatch = body.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  if (fmMatch) {
+    const yaml = fmMatch[1];
+    const reBlock = new RegExp('^body:\\s*[|>][-+]?\\n((?:(?!^\\w[\\w-]*:)[\\s\\S])*)', 'gm');
     const mBlock = reBlock.exec(yaml);
     if (mBlock && mBlock[1]) {
-      return mBlock[1].split('\n').map(function(l) { return l.replace(/^  /, ''); }).join('\n').trim();
+      body = mBlock[1].split('\n').map(function(l) { return l.replace(/^  /, ''); }).join('\n').trim();
+    } else if (fmMatch[2] && fmMatch[2].trim()) {
+      body = fmMatch[2].trim();
     }
-    const reSingle = new RegExp('^' + key + ':\\s*([^\\n]+)$', 'm');
-    const mSingle = yaml.match(reSingle);
-    if (!mSingle) return '';
-    const val = mSingle[1].trim().replace(/^["']|["']$/g, '');
-    if (/^\w[\w-]*:/.test(val)) return '';
-    return val;
   }
 
-  const body = getBlock('body');
   if (!body.trim()) return null;
   return { body };
 }
@@ -4680,7 +4689,7 @@ function parsePhotoMarkdown(text) {
     return m[1].replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"').trim();
   }
 
-  const image = getField('image');
+  const image = fixImagePath(getField('image'));
   if (!image) return null; // Image is the only required field
 
   return {
@@ -5999,6 +6008,7 @@ function parseQuoteMarkdown(text) {
   if (!quote.trim() || !visible) return null;
 
   return {
+    title:    getField('title'),
     quote,
     mine:     getBool('mine', true),
     author:   getField('author'),
@@ -6082,8 +6092,9 @@ async function fetchQuotes() {
       return Math.max(lines * lineH, lineH);
     }
 
-    // Set canvas height dynamically based on quote count
-    const baseH = Math.max(2400, shuffled.length * 220);
+    // Set canvas height dynamically based on quote count —
+    // minimum 600px so a single quote doesn't leave a massive empty page.
+    const baseH = Math.max(600, shuffled.length * 320);
     quotesCanvas.style.minHeight = baseH + 'px';
 
     // Collision detection
