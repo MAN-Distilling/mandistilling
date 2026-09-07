@@ -200,6 +200,7 @@ collections:
     fields:
       - { label: "Title (internal — for CMS list only, not shown on site. Keep it short.)", name: title, widget: string, hint: "Short label for finding this quote in the CMS list. Never displayed on the site." }
       - { label: Quote, name: quote, widget: text, hint: "The full quote text. Use [like this] for gold emphasis, {like this} for green emphasis." }
+      - { label: Description, name: description, widget: text, required: false, hint: "Optional — a subtle explanation shown below the quote when someone clicks it open. Plain text only." }
       - { label: "My own quote (shows in gold — uncheck for someone else's in white)", name: mine, widget: boolean, default: true, required: false }
       - { label: Author, name: author, widget: string, required: false, hint: "Leave blank if this is your own. For others: their name e.g. Marcus Aurelius." }
       - { label: Source, name: source, widget: string, required: false, hint: "e.g. Meditations, or a conversation, or a letter. Leave blank if unknown." }

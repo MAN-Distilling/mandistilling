@@ -1731,6 +1731,15 @@
 
   .qp-quote.mine { color: #d4a830; }
 
+  .qp-description {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-mid);
+    line-height: 1.7;
+    font-style: normal;
+    margin-bottom: 1rem;
+  }
+
   .qp-attribution {
     font-size: 12px;
     color: var(--ink-faint);
@@ -4525,8 +4534,11 @@ async function fetchBio() {
     const res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/_bio/bio.md');
     if (!res.ok) return null;
     const data = await res.json();
-    // GitHub API returns base64-encoded content for single-file fetches
-    const text = atob(data.content.replace(/\n/g, ''));
+    // GitHub API returns base64-encoded content for single-file fetches.
+    // decodeURIComponent(escape()) handles multi-byte UTF-8 characters
+    // (em-dashes, ellipses, etc.) that atob() alone mangles.
+    const bytes = atob(data.content.replace(/\n/g, ''));
+    const text = decodeURIComponent(escape(bytes));
     return parseBioMarkdown(text);
   } catch(e) {
     console.warn('Could not fetch bio from GitHub', e);
@@ -4601,7 +4613,8 @@ async function fetchColophon() {
     const res = await fetch('https://api.github.com/repos/' + GITHUB_REPO + '/contents/_colophon/colophon.md');
     if (!res.ok) return null;
     const data = await res.json();
-    const text = atob(data.content.replace(/\n/g, ''));
+    const bytes = atob(data.content.replace(/\n/g, ''));
+    const text = decodeURIComponent(escape(bytes));
     return parseColophonMarkdown(text);
   } catch(e) {
     console.warn('Could not fetch colophon from GitHub', e);
@@ -6008,13 +6021,14 @@ function parseQuoteMarkdown(text) {
   if (!quote.trim() || !visible) return null;
 
   return {
-    title:    getField('title'),
+    title:       getField('title'),
     quote,
-    mine:     getBool('mine', true),
-    author:   getField('author'),
-    source:   getField('source'),
-    date:     getField('date'),
-    category: getField('category')
+    description: getBlock('description'),
+    mine:        getBool('mine', true),
+    author:      getField('author'),
+    source:      getField('source'),
+    date:        getField('date'),
+    category:    getField('category')
   };
 }
 
@@ -6150,6 +6164,7 @@ async function fetchQuotes() {
         <button class="qp-close" aria-label="Close">×</button>
         <div class="qp-category">${catLine}</div>
         <div class="qp-quote ${q.mine ? 'mine' : ''}">${renderQuoteInline(q.quote)}</div>
+        ${q.description ? `<div class="qp-description">${q.description}</div>` : ''}
         ${attrLine ? `<div class="qp-attribution">${attrLine}</div>` : ''}
         ${q.date && q.mine ? `<div class="qp-date">First uttered on: ${q.date}</div>` : ''}
       `;
