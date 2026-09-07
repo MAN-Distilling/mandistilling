@@ -1,45 +1,51 @@
 // MAN.Distilling — CMS mobile sidebar collapse
-// Survives Decap's DOM re-renders by watching via MutationObserver.
-// A persistent reopen tab stays on screen whenever the sidebar is hidden.
+// Survives Decap's DOM re-renders via MutationObserver.
+// A persistent reopen tab stays on screen when sidebar is hidden.
 
 (function () {
   if (window.innerWidth > 800) return;
 
+  // ── State ──
   let collapsed = false;
   let currentSidebar = null;
+  let observerThrottle = null;
 
-  // ── Persistent reopen tab ──
-  // Guard: only create once — Decap can re-run scripts on navigation
-  if (document.getElementById('cms-sidebar-reopen')) return;
-  const reopenBtn = document.createElement('button');
-  reopenBtn.id = 'cms-sidebar-reopen';
-  reopenBtn.textContent = '›';
-  reopenBtn.title = 'Show collections';
-  reopenBtn.style.cssText = [
-    'position:fixed', 'top:50%', 'left:0',
-    'transform:translateY(-50%)',
-    'z-index:99998',
-    'width:24px', 'height:48px',
-    'background:#1a2820',
-    'color:#6aab8a',
-    'border:1px solid #2a4038',
-    'border-left:none',
-    'border-radius:0 6px 6px 0',
-    'font-size:18px',
-    'cursor:pointer',
-    'display:none',
-    'align-items:center',
-    'justify-content:center',
-    'padding:0',
-    'line-height:1'
-  ].join(';');
-  document.body.appendChild(reopenBtn);
+  // ── Reopen button — created once, persists across re-renders ──
+  let reopenBtn = document.getElementById('cms-sidebar-reopen');
+  if (!reopenBtn) {
+    reopenBtn = document.createElement('button');
+    reopenBtn.id = 'cms-sidebar-reopen';
+    reopenBtn.textContent = '›';
+    reopenBtn.title = 'Show collections';
+    reopenBtn.style.cssText = [
+      'position:fixed', 'top:50%', 'left:0',
+      'transform:translateY(-50%)',
+      'z-index:99998',
+      'width:24px', 'height:48px',
+      'background:#1a2820',
+      'color:#6aab8a',
+      'border:1px solid #2a4038',
+      'border-left:none',
+      'border-radius:0 6px 6px 0',
+      'font-size:18px',
+      'cursor:pointer',
+      'display:none',
+      'align-items:center',
+      'justify-content:center',
+      'padding:0',
+      'line-height:1'
+    ].join(';');
+    document.body.appendChild(reopenBtn);
 
-  reopenBtn.addEventListener('click', () => {
-    collapsed = false;
-    applySidebarState();
-  });
+    reopenBtn.addEventListener('click', () => {
+      collapsed = false;
+      const a = document.getElementById('cms-sidebar-arrow');
+      if (a) a.style.transform = 'rotate(0deg)';
+      applySidebarState();
+    });
+  }
 
+  // ── Apply collapsed/expanded state to current sidebar ──
   function applySidebarState() {
     if (!currentSidebar) return;
     if (collapsed) {
@@ -55,30 +61,33 @@
     }
   }
 
+  // ── Attach toggle to the Collections heading ──
+  // Called on every Decap re-render — must be safe to call repeatedly.
   function attachToggle() {
+    // Find the Collections h2
     let collectionsHeading = null;
     document.querySelectorAll('h2').forEach(h => {
-      if (h.textContent.trim().toLowerCase() === 'collections') {
+      if (h.textContent.replace('‹', '').trim().toLowerCase() === 'collections') {
         collectionsHeading = h;
       }
     });
-
     if (!collectionsHeading) return;
 
     const sidebar = collectionsHeading.closest('aside');
     if (!sidebar) return;
 
-    // Re-style sidebar whenever Decap re-renders it
+    // Always re-style the sidebar — it may be a fresh DOM element
     sidebar.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
     sidebar.style.transformOrigin = 'left top';
     currentSidebar = sidebar;
 
-    // Re-apply collapsed state if it was set before re-render
+    // Re-apply current collapsed state to the (possibly new) sidebar element
     applySidebarState();
 
-    // Already attached this heading — don't double-bind
-    if (collectionsHeading.dataset.toggleAttached) return;
-    collectionsHeading.dataset.toggleAttached = 'true';
+    // Always re-inject the arrow into the heading — Decap recreates it on navigation
+    // Remove any stale arrow first
+    const oldArrow = document.getElementById('cms-sidebar-arrow');
+    if (oldArrow) oldArrow.remove();
 
     collectionsHeading.style.cssText += 'display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;';
 
@@ -86,18 +95,29 @@
     arrow.id = 'cms-sidebar-arrow';
     arrow.textContent = '‹';
     arrow.style.cssText = 'font-size:20px;color:#6aab8a;margin-left:8px;transition:transform 0.25s;flex-shrink:0;';
+    arrow.style.transform = collapsed ? 'rotate(180deg)' : 'rotate(0deg)';
     collectionsHeading.appendChild(arrow);
+
+    // Only bind the click listener once per heading instance
+    if (collectionsHeading.dataset.toggleAttached) return;
+    collectionsHeading.dataset.toggleAttached = 'true';
 
     collectionsHeading.addEventListener('click', () => {
       collapsed = !collapsed;
-      arrow.style.transform = collapsed ? 'rotate(180deg)' : 'rotate(0deg)';
+      // Look up arrow fresh — it's always in the same heading we have a ref to
+      const a = document.getElementById('cms-sidebar-arrow');
+      if (a) a.style.transform = collapsed ? 'rotate(180deg)' : 'rotate(0deg)';
       applySidebarState();
     });
   }
 
-  // ── MutationObserver — re-attach whenever Decap re-renders the DOM ──
+  // ── MutationObserver — throttled to avoid firing hundreds of times/sec ──
   const observer = new MutationObserver(() => {
-    attachToggle();
+    if (observerThrottle) return;
+    observerThrottle = setTimeout(() => {
+      observerThrottle = null;
+      attachToggle();
+    }, 150);
   });
 
   function startObserving() {
