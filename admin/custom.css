@@ -2,14 +2,27 @@
 
 @media (max-width: 800px) {
 
-  /* ── TOP BAR — un-stick header on mobile so it scrolls with the page ── */
-  /* In entry edit mode Decap sets position:sticky + top:0 on the header,
-     locking it at viewport width (414px) while page content is 800px wide.
-     Reverting to relative puts it back in normal flow — scrolls with page. */
+  /* ── TOP BAR — un-stick header on mobile so it scrolls independently ── */
+  /* position:relative removes Decap's sticky lock in entry edit mode.
+     overflow-x:auto + width:100vw makes the header a scroll container
+     exactly as wide as the viewport.
+     Targeting header element specifically — NOT inner AppHeaderContent div. */
   header.css-y7r3-AppHeader,
-  [class*="AppHeader"] {
+  header[class*="AppHeader"] {
     position: relative !important;
     top: auto !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    width: 100vw !important;
+  }
+
+  /* Inner row must hold its full natural width so scroll can reach the end.
+     min-width:max-content must NOT be overridden by the header rule above —
+     using a more specific selector (div prefix) to win that specificity battle. */
+  div.e16dayda0 {
+    min-width: max-content !important;
+    flex-shrink: 0 !important;
+    width: auto !important;
   }
 
   /* ── SIDEBAR COLLAPSE ── */
