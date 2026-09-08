@@ -2,30 +2,14 @@
 
 @media (max-width: 800px) {
 
-  /* ── TOP BAR — prevent clipping on iPhone portrait ── */
-  /* Confirmed via browser inspector. Real class names from Decap's rendered DOM:
-     header.css-y7r3-AppHeader (scrollWidth 800px, clientWidth 651px — 149px overflow)
-     div.e16dayda0 = AppHeaderContent (inner flex row)
-     ul.e16dayda4  = AppHeaderNavList
-     Approach: let header scroll horizontally rather than clip. */
-
-  /* Step 1: header becomes the scroll container */
+  /* ── TOP BAR — un-stick header on mobile so it scrolls with the page ── */
+  /* In entry edit mode Decap sets position:sticky + top:0 on the header,
+     locking it at viewport width (414px) while page content is 800px wide.
+     Reverting to relative puts it back in normal flow — scrolls with page. */
   header.css-y7r3-AppHeader,
   [class*="AppHeader"] {
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-  }
-
-  /* Step 2: inner content row holds its natural width — doesn't compress */
-  .e16dayda0 {
-    min-width: max-content !important;
-    flex-shrink: 0 !important;
-    flex-wrap: nowrap !important;
-  }
-
-  /* Step 3: nav list stays in a single row */
-  .e16dayda4 {
-    flex-wrap: nowrap !important;
+    position: relative !important;
+    top: auto !important;
   }
 
   /* ── SIDEBAR COLLAPSE ── */
