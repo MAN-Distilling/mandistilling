@@ -2,27 +2,56 @@
 
 @media (max-width: 800px) {
 
-  /* ── TOP BAR — un-stick header on mobile so it scrolls independently ── */
-  /* position:relative removes Decap's sticky lock in entry edit mode.
-     overflow-x:auto + width:100vw makes the header a scroll container
-     exactly as wide as the viewport.
-     Targeting header element specifically — NOT inner AppHeaderContent div. */
-  header.css-y7r3-AppHeader,
-  header[class*="AppHeader"] {
-    position: relative !important;
-    top: auto !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    width: 100vw !important;
+  /* ── PHONE LAYOUT ────────────────────────────────────────────────
+     ROOT CAUSE (verified in Decap's source): four containers hard-code
+     min-width: 800px — the header row, the main container, the editor
+     container and the fixed editor toolbar. On a phone that forces the
+     page 800px wide, so Publish / Delete / Quick add fall off-screen.
+     Removing the floor fixes the cause instead of patching symptoms. */
+  [class*="AppHeaderContent"],
+  [class*="AppMainContainer"],
+  [class*="EditorContainer"],
+  [class*="ToolbarContainer"] {
+    min-width: 0 !important;
   }
 
-  /* Inner row must hold its full natural width so scroll can reach the end.
-     min-width:max-content must NOT be overridden by the header rule above —
-     using a more specific selector (div prefix) to win that specificity battle. */
-  div.e16dayda0 {
-    min-width: max-content !important;
-    flex-shrink: 0 !important;
-    width: auto !important;
+  /* Collections page: sidebar is position:fixed, so the list no longer
+     needs Decap's 280px left gutter (it would squeeze the list to ~100px). */
+  [class*="CollectionMain"] {
+    padding-left: 0 !important;
+  }
+
+  /* ── EDITOR TOOLBAR (Save / Status / Publish / Delete) ──
+     Wraps onto two rows instead of overflowing. Deliberately NOT using
+     overflow:auto — that would clip the Publish/Status dropdown menus. */
+  [class*="ToolbarContainer"] {
+    height: auto !important;
+    min-height: 66px !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    padding: 2px 0 !important;
+  }
+  /* flatten the inner wrappers so buttons wrap as one flowing group */
+  [class*="ToolbarSectionMain"],
+  [class*="ToolbarSubSection"] {
+    display: contents !important;
+  }
+  /* keep the arrow + "Changes saved" status, drop the long collection text */
+  [class*="BackCollection"] {
+    display: none !important;
+  }
+  /* room for the taller bar */
+  [class*="EditorContainer"] {
+    padding-top: 96px !important;
+  }
+
+  /* ── TOP BAR on phones: icon-only nav so everything fits the screen ── */
+  @media (max-width: 600px) {
+    [class*="AppHeaderNavList"] li > * {
+      font-size: 0 !important;
+      padding: 16px 14px !important;
+    }
   }
 
   /* ── SIDEBAR COLLAPSE ── */
@@ -40,24 +69,25 @@
     padding: 12px !important;
   }
 
-  /* ── IMAGE GRID — 3 per row ── */
-  [class*="Card"] {
+  /* ── IMAGE GRID — 3 per row (media-library modal only, so the entry
+     list cards keep Decap's normal full-width layout) ── */
+  [class*="StyledModal"] [class*="Card"] {
     width: 28vw !important;
     height: 28vw !important;
     min-width: 0 !important;
     margin: 3px !important;
   }
 
-  [class*="CardImage"] {
+  [class*="StyledModal"] [class*="CardImage"] {
     width: 100% !important;
     height: 70% !important;
     object-fit: cover !important;
   }
 
   /* Hide filename text to save space */
-  [class*="CardText"],
-  [class*="card-text"],
-  [class*="CardTitle"] {
+  [class*="StyledModal"] [class*="CardText"],
+  [class*="StyledModal"] [class*="card-text"],
+  [class*="StyledModal"] [class*="CardTitle"] {
     font-size: 8px !important;
     padding: 2px 3px !important;
     white-space: nowrap !important;
