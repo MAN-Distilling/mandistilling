@@ -67,33 +67,35 @@
     width: 95vw !important;
     max-width: 95vw !important;
     padding: 12px !important;
+    /* header row grows with the wrapped buttons (Decap fixes it at 120px,
+       which made the search bar overlap the buttons) */
+    grid-template-rows: auto 1fr !important;
   }
 
-  /* ── IMAGE GRID — 3 per row (media-library modal only, so the entry
-     list cards keep Decap's normal full-width layout) ── */
-  [class*="StyledModal"] [class*="Card"] {
-    width: 28vw !important;
-    height: 28vw !important;
-    min-width: 0 !important;
-    margin: 3px !important;
+  /* close (×) button: Decap parks it 40px OUTSIDE the modal's left edge,
+     which is off-screen on a phone — move it inside, top-right */
+  [class*="StyledModal"] [class*="CloseButton"] {
+    left: auto !important;
+    right: 8px !important;
+    top: 8px !important;
+    margin: 0 !important;
+    width: 34px !important;
+    height: 34px !important;
   }
-
-  [class*="StyledModal"] [class*="CardImage"] {
+  [class*="StyledModal"] [class*="LibraryTitle"] {
+    padding-right: 44px !important;
+    margin-bottom: 12px !important;
+  }
+  /* search box is hard-coded 400px wide — wider than a phone modal */
+  [class*="StyledModal"] [class*="SearchContainer"] {
     width: 100% !important;
-    height: 70% !important;
-    object-fit: cover !important;
   }
 
-  /* Hide filename text to save space */
-  [class*="StyledModal"] [class*="CardText"],
-  [class*="StyledModal"] [class*="card-text"],
-  [class*="StyledModal"] [class*="CardTitle"] {
-    font-size: 8px !important;
-    padding: 2px 3px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-  }
+  /* ── IMAGE GRID ──
+     Decap's media grid is virtualized: every cell has a fixed size set by
+     Decap. The old rules here forced [class*="Card"] to 28vw, but that also
+     matched the grid container itself (CardGridContainer) and crushed it to
+     ~116px, so NO images rendered. Removed — Decap's own card sizing works. */
 
   /* ── MEDIA LIBRARY BUTTON ROWS — let them wrap instead of hanging off-screen ── */
   [class*="RowContainer"] {
@@ -218,4 +220,25 @@ body.cms-dark [class*="active"],
 body.cms-dark [class*="Active"] {
   background-color: #1a3028 !important;
   color: #6aab8a !important;
+}
+
+/* Dropdown menus (Quick add, avatar, Sort by, Status, Publish).
+   The dark rules above force all text light but left the menu panels
+   white, so the text was invisible. Give the panels a dark surface. */
+body.cms-dark [class*="DropdownList"] {
+  background-color: #141f1a !important;
+  border: 1px solid #2a4038 !important;
+}
+
+body.cms-dark [class*="StyledMenuItem"],
+body.cms-dark [class*="dropdownItem"] {
+  background-color: #141f1a !important;
+  color: #e8ede9 !important;
+}
+
+body.cms-dark [class*="StyledMenuItem"]:hover,
+body.cms-dark [class*="StyledMenuItem"]:focus,
+body.cms-dark [class*="dropdownItem"]:hover,
+body.cms-dark [class*="dropdownItem"]:focus {
+  background-color: #1a3028 !important;
 }
