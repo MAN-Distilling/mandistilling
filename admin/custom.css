@@ -124,6 +124,18 @@
 
 }
 
+/* ── EMPTY COLLECTIONS (phones in portrait AND landscape) ──
+   Decap hard-codes the "No entries" message at 682px. Next to the 280px
+   sidebar gutter that is ~980px, so an empty collection (e.g. Books) made
+   the page wider than a landscape phone (896px) as well as a portrait one.
+   Only applies up to 1000px, so desktop is untouched. */
+@media (max-width: 1000px) {
+  [class*="PaginationMessage"] {
+    width: auto !important;
+    max-width: 100% !important;
+  }
+}
+
 /* ── CMS DARK MODE ── */
 
 /* Toggle button — fixed, always visible */
@@ -240,5 +252,59 @@ body.cms-dark [class*="StyledMenuItem"]:hover,
 body.cms-dark [class*="StyledMenuItem"]:focus,
 body.cms-dark [class*="dropdownItem"]:hover,
 body.cms-dark [class*="dropdownItem"]:focus {
+  background-color: #1a3028 !important;
+}
+
+/* ── DARK MODE: surfaces the original dark rules missed ──
+   The original rules force all text near-white but left several surfaces
+   white, giving white-on-white (found by a contrast audit of every screen).
+   Everything below is scoped to body.cms-dark, so light mode is untouched. */
+
+/* heading cards at the top of the Collections and Workflow pages */
+body.cms-dark [class*="CollectionTopContainer"],
+body.cms-dark [class*="WorkflowTop"] {
+  background-color: #141f1a !important;
+  color: #e8ede9 !important;
+}
+
+/* editor form pane. ONLY Pane1 — the preview pane (Pane2) stays white
+   with dark text on purpose, since it previews the light-themed site. */
+body.cms-dark .Pane1,
+body.cms-dark [class*="NoPreviewContainer"] {
+  background-color: #0f1a16 !important;
+}
+body.cms-dark [class*="FieldLabel"] {
+  background-color: #1a3028 !important;
+  color: #b8cfc4 !important;
+}
+body.cms-dark [class*="ControlHint"] {
+  color: #8aa89a !important;
+}
+
+/* editor toolbar */
+body.cms-dark [class*="BackArrow"] {
+  color: #e8ede9 !important;
+}
+body.cms-dark [class*="BackStatus"] {
+  color: #6aab8a !important;
+}
+body.cms-dark [class*="BackStatusChanged"] {
+  color: #d4a830 !important;
+}
+body.cms-dark [class*="ToolbarContainer"] [class*="StyledDropdownButton"]:not([class*="PublishButton"]):not([class*="AvatarDropdownButton"]) {
+  background-color: #1a3028 !important;
+  color: #6aab8a !important;
+}
+body.cms-dark [class*="SaveButton"] {
+  background-color: #1a3028 !important;
+  color: #b8cfc4 !important;
+}
+body.cms-dark [class*="DeleteButton"] {
+  background-color: #2a1a20 !important;
+  color: #ff7a96 !important;
+}
+
+/* Workflow board columns */
+body.cms-dark [class*="ColumnHeader"] {
   background-color: #1a3028 !important;
 }
