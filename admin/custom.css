@@ -41,9 +41,24 @@
   [class*="BackCollection"] {
     display: none !important;
   }
-  /* room for the app header + wrapped save/publish toolbar */
+  /* room for the top bar + nav bar */
   [class*="EditorContainer"] {
-    padding-top: 162px !important;
+    padding-top: 96px !important;
+  }
+
+  /* ── NAV BAR (Collections / Workflow / Media / Quick Add) ──
+     Decap doesn't fix this bar on mobile so it scrolls and hides
+     behind the top bar when the CMS snaps the page back.
+     Pin it just below the top bar so it stays visible always. */
+  [class*="AppHeaderNavList"] {
+    position: fixed !important;
+    top: 48px !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9000 !important;
+    background: #0a1410 !important;
+    border-bottom: 1px solid #1a3028 !important;
+    padding: 0 8px !important;
   }
 
   /* ── TOP BAR on phones: icon-only nav so everything fits the screen ── */
