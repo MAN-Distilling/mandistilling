@@ -41,9 +41,9 @@
   [class*="BackCollection"] {
     display: none !important;
   }
-  /* room for the taller bar */
+  /* room for the app header + wrapped save/publish toolbar */
   [class*="EditorContainer"] {
-    padding-top: 96px !important;
+    padding-top: 162px !important;
   }
 
   /* ── TOP BAR on phones: icon-only nav so everything fits the screen ── */
