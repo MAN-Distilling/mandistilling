@@ -1,68 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Primary -->
+  <!-- Home -->
   <url>
     <loc>https://mandistilling.quest/</loc>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Sections — all served from single index.html -->
+  <!-- Main sections — all served from index.html via hash routing (#/name) -->
+
   <url>
-    <loc>https://mandistilling.quest/#projects</loc>
+    <loc>https://mandistilling.quest/#/thoughts</loc>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://mandistilling.quest/#thoughts</loc>
+    <loc>https://mandistilling.quest/#/projects</loc>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://mandistilling.quest/#art</loc>
+    <loc>https://mandistilling.quest/#/art</loc>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://mandistilling.quest/#photo</loc>
+    <loc>https://mandistilling.quest/#/photo</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://mandistilling.quest/#/map</loc>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+
   <url>
-    <loc>https://mandistilling.quest/#map</loc>
+    <loc>https://mandistilling.quest/#/words</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mandistilling.quest/#/reading</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mandistilling.quest/#/now</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://mandistilling.quest/#/links</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://mandistilling.quest/#/gopher</loc>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
   <url>
-    <loc>https://mandistilling.quest/#links</loc>
+    <loc>https://mandistilling.quest/#/quotes</loc>
+    <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://mandistilling.quest/#/bio</loc>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
+
   <url>
-    <loc>https://mandistilling.quest/#words</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://mandistilling.quest/#now</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://mandistilling.quest/#gopher</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://mandistilling.quest/#colophon</loc>
+    <loc>https://mandistilling.quest/#/colophon</loc>
+    <lastmod>2026-11-06</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>
-  <url>
-    <loc>https://mandistilling.quest/#bio</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-  </url>
+
+  <!-- Individual entries will be added here once real content is published -->
+  <!-- Format: https://mandistilling.quest/#/thoughts/post-title-slug -->
+  <!-- Format: https://mandistilling.quest/#/projects/post-title-slug -->
 
 </urlset>
