@@ -1,4 +1,3 @@
-<!--StartFragment-->
 
 Colophon 
 
@@ -17,5 +16,3 @@ The typefaces are Lora, a contemporary serif with roots in classical calligraphy
 The footer reads: *MAN.Distilling · 1985 – Until …* The ellipsis links to the Future section of the Bio. The … at the end of a life is not punctuation. It is direction.
 
 Built in the open. Hosted on Netlify. Domain registered at Porkbun. Version control on GitHub. Written in conversation. May 2026. ∴
-
-<!--EndFragment-->
